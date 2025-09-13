@@ -4,26 +4,21 @@
 #include <fstream>
 #include <windows.h>
 #include <vector>
+#include "employee.h"
 
 using std::cin;
 using std::cout;
 
-struct employee {
-	int num;
-	char name[10];
-	double hours;
-};
-
-
 void printBinFile(const std::string& fileName) {
+
 	std::ifstream fin(fileName, std::ios::binary);
 	if (!fin) {
-		std::cerr << "Cannot open binary file " << fileName << "\n";
+		cout << "Cannot open binary file " << fileName << "\n";
 		return;
 	}
 
 	employee person;
-	cout << "\nBinary file content:\n";
+	cout << "\n\tBinary file content:\n";
 	cout << std::left << std::setw(15) << "Employee ID";
 	cout << std::left << std::setw(15) << "Employee name";
 	cout << std::left << std::setw(15) << "Employee hours\n";
@@ -37,9 +32,10 @@ void printBinFile(const std::string& fileName) {
 }
 
 void printReportFile(const std::string& fileName) {
+
 	std::ifstream fin(fileName);
 	if (!fin) {
-		std::cerr << "Cannot open report file " << fileName << "\n";
+		cout << "Cannot open report file " << fileName << "\n";
 		return;
 	}
 
@@ -66,28 +62,27 @@ void runProcess(const std::string& cmd) {
 		throw std::runtime_error("Не удалось запустить процесс: " + cmd);
 	}
 
-	// Ждём завершения процесса
 	WaitForSingleObject(pi.hProcess, INFINITE);
 
-	// Закрываем дескрипторы
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
 }
 
 int main() {
+
+	std::iostream::sync_with_stdio(false);
+	std::cin.tie(0);
+	std::cout.tie(0);
+
+	std::string binFileName;
+	int count;
+
+	cout << "Enter the name of the binary file:\n";
+	cin >> binFileName;
+	cout << "Enter the number of entries:\n";
+	cin >> count;
+
 	try {
-		std::iostream::sync_with_stdio(false);
-		std::cin.tie(0);
-		std::cout.tie(0);
-
-		std::string binFileName;
-		int count;
-
-		cout << "Enter the name of the binary file:\n";
-		cin >> binFileName;
-		cout << "Enter the number of entries:\n";
-		cin >> count;
-
 		std::string creatorToCmd = "Creator.exe " + binFileName + " " + std::to_string(count);
 		runProcess(creatorToCmd);
 		printBinFile(binFileName);
@@ -106,8 +101,7 @@ int main() {
 	}
 	catch (const std::exception& exp) {
 
-		std::cerr << "Error: ";
+		cout << "Error: " << exp.what() << "\n";
 	}
-
 
 }
