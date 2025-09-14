@@ -2,17 +2,28 @@ package org.example;
 
 import java.util.Scanner;
 import java.util.Random;
+import java.util.InputMismatchException;
 
 public class Matrix {
     public static void main(String[] args) {
 
         Scanner in = new Scanner(System.in);
-        int rows, cols;
-
-        System.out.println("Enter the number of rows of the matrix:");
-        rows = in.nextInt();
-        System.out.println("Enter the number of columns of the matrix:");
-        cols = in.nextInt();
+        int rows = 0, cols = 0;
+        try {
+            System.out.println("Enter the number of rows of the matrix:");
+            rows = in.nextInt();
+            System.out.println("Enter the number of columns of the matrix:");
+            cols = in.nextInt();
+            if (rows < 0 || cols < 0) {
+                throw new IllegalArgumentException("The range of numbers is broken");
+            }
+        } catch (InputMismatchException ex) {
+            System.out.println("Error: Invalid data format");
+            return;
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            return;
+        }
 
         int[][] matrix = new int[rows][cols];
         Random randInt = new Random();
@@ -24,30 +35,42 @@ public class Matrix {
         }
 
         printMatrix(matrix);
+
         int index = searchRowIndex(matrix);
+
         printMaxRow(matrix, index);
     }
 
     static int searchRowIndex(int[][] matrix) {
 
-        int sum = 0, max = Integer.MIN_VALUE, index = 0;
+        int sum, max = -1, index = -1;
 
         for (int i = 0; i < matrix.length; i++) {
+            sum = 0;
             for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] % 2 == 0) {
+                    sum = -1;
+                    break;
+                }
                 sum += Math.abs(matrix[i][j]);
+
             }
 
             if (sum > max) {
                 max = sum;
                 index = i;
             }
-
-            sum = 0;
         }
+
         return index;
     }
 
     static void printMaxRow(int[][] matrix, int index) {
+
+        if (index < 0) {
+            System.out.println("\nRows with odd numbers were not found.");
+            return;
+        }
 
         int sum = 0;
         System.out.println("\nThe row number with the largest absolute sum of numbers: " + (index + 1));
