@@ -1,12 +1,7 @@
 ﻿#include <fstream>
 #include <string>
 #include <iostream>
-
-struct employee {
-	int num;
-	char name[10];
-	double hours;
-};
+#include "employee.h"
 
 int main(int argc, char* argv[]) {
 
@@ -22,7 +17,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i < count; i++) {
 		employee person;
 
-		std::cout << "Person №: " << i + 1 << "\nEnter the employee's identification number:\n";
+		std::cout << "Person #: " << i + 1 << "\nEnter the employee's identification number:\n";
 		std::cin >> person.num;
 
 		std::cout << "Enter the employee's name (maximum 9 letters):\n";
