@@ -1,6 +1,7 @@
 package org.example;
 
 import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -19,6 +20,7 @@ class MatrixTest {
         int expectedIndex = -1;
         assertEquals(expectedIndex, Matrix.searchRowIndex(matrix));
     }
+
     @Test
     void testSearchRowIndexNormalMatrix() {
         int[][] matrix = {
