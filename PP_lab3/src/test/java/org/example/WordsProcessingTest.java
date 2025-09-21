@@ -1,38 +1,41 @@
 package org.example;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.Test;
 
-/**
- * Unit test for simple App.
- */
-public class WordsProcessingTest
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public WordsProcessingTest(String testName )
-    {
-        super( testName );
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class WordsProcessingTest {
+    @Test
+    void testProcessingLineSimple() {
+        String line = "jpoo joo";
+        String expected = "Jpoo Joo";
+        String actual = WordsProcessing.processingLine(line);
+        assertEquals(expected, actual);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( WordsProcessingTest.class );
+    @Test
+    void testProcessingLineEmpty() {
+        String line = "";
+        String expected = "";
+        String actual = WordsProcessing.processingLine(line);
+        assertEquals(expected, actual);
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    void testProcessingLineDelimeters() {
+        String line = "And did, yOU, cover the code, with unit tests....?";
+        String expected = "And Did, YOU, Cover The Code, With Unit Tests....?";
+        String actual = WordsProcessing.processingLine(line);
+        assertEquals(expected, actual);
     }
+
+    @Test
+    void testProcessingLineRussian() {
+        String line = "Не пишутся тесты - do refactoring!";
+        String expected = "Не Пишутся Тесты - Do Refactoring!";
+        String actual = WordsProcessing.processingLine(line);
+        assertEquals(expected, actual);
+    }
+
+
 }

@@ -5,15 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6e41b7c-808f-44af-9a87-4e607fa450fd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../PP_lab3/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_lab3/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_lab3/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_lab3/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_lab3/src/main/java/org/example/WordsProcessing.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_lab3/src/test/java/org/example/WordsProcessingTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/org/example/MatrixTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/example/MatrixTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/org/example/MatrixTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/org/example/MatrixTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_lab3/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../PP_lab3/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_lab3/src/test/java/org/example/WordsProcessingTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../PP_lab3/src/test/java/org/example/WordsProcessingTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
