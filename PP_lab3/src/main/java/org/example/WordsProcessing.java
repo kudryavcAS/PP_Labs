@@ -6,6 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WordsProcessing {
+
+    private static final Pattern WORD_PATTERN = Pattern.compile("\\p{L}+\\b", Pattern.UNICODE_CHARACTER_CLASS);
+
     public static void main(String[] args) {
 
         Scanner in = new Scanner(System.in);
@@ -32,8 +35,8 @@ public class WordsProcessing {
         if (line == null || line.isEmpty()) {
             return line;
         }
-        Pattern wordPattern = Pattern.compile("\\p{L}+\\b", Pattern.UNICODE_CHARACTER_CLASS);
-        Matcher allWords = wordPattern.matcher(line);
+
+        Matcher allWords = WORD_PATTERN.matcher(line);
 
         StringBuffer result = new StringBuffer();
 
