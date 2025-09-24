@@ -57,21 +57,51 @@ DWORD WINAPI searchAverage(LPVOID lpData) {
 	}
 	arrayData->average = static_cast<double>(sum) / arr.size();
 	//!!!!!!!!!!!!!
-	std::cout <<"The average value of the array (rounded to an integer): " << arrayData->average << "\n";
+	std::cout << "The average value of the array (rounded to an integer): " << arrayData->average << "\n";
 	return 0;
 }
 
 int main() {
 
 	int n;
-	std::cout << "Enter the array size:\n";
-	std::cin >> n;
+	try {
+		std::cout << "Enter the array size:\n";
+		std::cin >> n;
+
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(10000, '\n');
+			throw std::invalid_argument("Invalid input. Enter an integer.");
+		}
+		if (n <= 0) {
+			throw std::invalid_argument("Invalid input. Enter n > 0 ");
+		}
+	}
+	catch (const std::exception& ecx) {
+		std::cout << "Error: " << ecx.what() << "\n";
+		main();
+	}
 
 	std::vector<int> array(n);
+	while (true)
+		try {
 
-	for (int i = 0; i < n; i++) {
-		std::cin >> array[i];
+		std::cout << "Enter the array elements separated by a space\n";
+		for (int i = 0; i < n; i++) {
+			std::cin >> array[i];
+		}
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(10000, '\n');
+			throw std::invalid_argument("Invalid input. Enter an integer.");
+		}
+		break;
 	}
+	catch (const std::exception& ecx) {
+		std::cout << "Error: " << ecx.what() << "\n";
+		continue;
+	}
+
 
 	ArrayData arrayData(&array, 0, 0, 0);
 
