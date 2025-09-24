@@ -36,9 +36,8 @@ DWORD WINAPI searchMinMaxElement(LPVOID lpData) {
 		Sleep(7);
 	}
 
-	std::cout << "Min: " << arrayData->minElement << std::endl;
-	std::cout << "Max: " << arrayData->maxElement << std::endl;
-	std::cout << "Complete minmax\n";
+	std::cout << "Minimum element of the array: " << arrayData->minElement
+		<< "\nMaximum element of the array: " << arrayData->maxElement << "\n";
 
 	return 0;
 }
@@ -58,8 +57,7 @@ DWORD WINAPI searchAverage(LPVOID lpData) {
 	}
 	arrayData->average = static_cast<double>(sum) / arr.size();
 	//!!!!!!!!!!!!!
-	std::cout << arrayData->average << "\n";
-	std::cout << "Complete average\n";
+	std::cout <<"The average value of the array (rounded to an integer): " << arrayData->average << "\n";
 	return 0;
 }
 
@@ -82,18 +80,19 @@ int main() {
 	HANDLE hAverage = CreateThread(NULL, 0, searchAverage, &arrayData, 0, NULL);
 
 	if (hMinMax == NULL || hAverage == NULL) {
-		std::cout << "Erroe";
+		std::cout << "Error: failed to create a thread.\n";
 		return 1;
 	}
 
 	WaitForSingleObject(hMinMax, INFINITE);
 	WaitForSingleObject(hAverage, INFINITE);
 
-	std::cout << "Both....";
+	std::cout << "The threads have completed their work.\n";
 
 	CloseHandle(hMinMax);
 	CloseHandle(hAverage);
 
+	std::cout << "The resulting array:\n";
 	for (int i = 0; i < array.size(); i++) {
 		if (array[i] == arrayData.maxElement || array[i] == arrayData.minElement) {
 			array[i] = arrayData.average;
@@ -101,8 +100,6 @@ int main() {
 
 		std::cout << array[i] << "\t";
 	}
-
-
 
 	return 0;
 }
