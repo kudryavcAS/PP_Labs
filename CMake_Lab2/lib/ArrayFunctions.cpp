@@ -2,7 +2,7 @@
 #include <iostream>
 #include <windows.h>
 
-ArrayData::ArrayData(std::vector<int>* _array, int _max, int _min, double _average)
+ArrayData::ArrayData(std::vector<int>* _array, int _max, int _min, int _average)
 	: array(_array), maxElement(_max), minElement(_min), average(_average) {
 }
 
@@ -49,8 +49,8 @@ DWORD WINAPI searchAverage(LPVOID lpData) {
 		sum += arr[i];
 		Sleep(12);
 	}
-	arrayData->average = static_cast<double>(sum) / arr.size();
-	//!!!!!!!!!!!!!
+	arrayData->average = static_cast<int>(std::round(static_cast<double>(sum) / arr.size()));
+
 	std::cout << "The average value of the array (rounded to an integer): " << arrayData->average << "\n";
 	return 0;
 }

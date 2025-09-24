@@ -13,8 +13,8 @@ int main() {
 			std::cin.ignore(10000, '\n');
 			throw std::invalid_argument("Invalid input. Enter an integer.");
 		}
-		if (n <= 0) {
-			throw std::invalid_argument("Invalid input. Enter n > 0 ");
+		if (n <= 0 || n >= 10000) {
+			throw std::invalid_argument("Invalid input. Enter n > 0 and < 10000");
 		}
 	}
 	catch (const std::exception& ecx) {

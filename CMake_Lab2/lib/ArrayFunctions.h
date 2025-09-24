@@ -4,10 +4,9 @@
 
 struct ArrayData {
     std::vector<int>* array;
-    int maxElement, minElement;
-    double average;
+    int maxElement, minElement, average;
 
-    ArrayData(std::vector<int>* _array, int _max, int _min, double _average);
+    ArrayData(std::vector<int>* _array, int _max, int _min, int _average);
     ArrayData();
 };
 
