@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿
+#include "CMake_Lab2.h"
+
+#include <iostream>
 #include <vector>
 #include <windows.h>
 
@@ -15,7 +18,7 @@ struct ArrayData {
 };
 
 DWORD WINAPI searchMinMaxElement(LPVOID lpData) {
-	ArrayData* arrayData = (ArrayData*)lpData;
+	ArrayData* arrayData = static_cast<ArrayData*>(lpData);
 
 	if (arrayData->array->empty()) {
 		return 0;
@@ -43,7 +46,7 @@ DWORD WINAPI searchMinMaxElement(LPVOID lpData) {
 }
 
 DWORD WINAPI searchAverage(LPVOID lpData) {
-	ArrayData* arrayData = (ArrayData*)lpData;
+	ArrayData* arrayData = static_cast<ArrayData*>(lpData);
 
 	if (arrayData->array->empty()) {
 		return 0;
