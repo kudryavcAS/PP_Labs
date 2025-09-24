@@ -25,3 +25,4 @@ FetchContent_MakeAvailable(googletest)
 # Включите подпроекты.
 add_subdirectory ("main")
 add_subdirectory ("tests")
+add_subdirectory ("lib")

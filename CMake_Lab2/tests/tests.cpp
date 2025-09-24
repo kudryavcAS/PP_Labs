@@ -1,16 +1,14 @@
 #include<gtest/gtest.h>
+#include "ArrayFunctions.h"
 
-// Demonstrate some basic assertions.
-TEST(HelloTest, BasicAssertions) {
-	// Expect two strings not to be equal.
-	EXPECT_STRNE("hello", "world");
-	// Expect equality.
-	EXPECT_EQ(7 * 6, 43);
-}
+extern DWORD WINAPI searchMinMaxElement(LPVOID lpData);
+extern DWORD WINAPI searchAverage(LPVOID lpData);
 
-TEST(HelloTest2, BasicAssertions) {
-	// Expect two strings not to be equal.
-	EXPECT_STRNE("hello", "world");
-	// Expect equality.
-	EXPECT_EQ(7 * 6, 42);
+TEST(ThreadFunctions, MinMaxFindsCorrectValues) {
+   std::vector<int> arr = { 5, 2, 8, 1, 9, 3 };
+   ArrayData data(&arr, 0, 0, 0.0);
+
+   EXPECT_EQ(searchMinMaxElement(&data), 0);
+   EXPECT_EQ(data.minElement, 1);
+   EXPECT_EQ(data.maxElement, 9);
 }

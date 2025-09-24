@@ -9,4 +9,8 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET CMake_Lab2 PROPERTY CXX_STANDARD 20)
 endif()
 
+target_link_libraries(CMake_Lab2 PRIVATE arrayfunctions)
+
+target_include_directories(CMake_Lab2 PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.

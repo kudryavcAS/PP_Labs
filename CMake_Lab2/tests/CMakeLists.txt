@@ -8,10 +8,11 @@ endif()
 enable_testing()
 
 
-target_link_libraries(tests GTest::gtest_main)
+#target_link_libraries(tests GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(tests)
-if(WIN32)
-    target_link_libraries(tests Kernel32.lib)
-endif()
+
+target_link_libraries(tests PRIVATE arrayfunctions PRIVATE GTest::gtest_main PRIVATE Kernel32.lib)
+
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/lib)
