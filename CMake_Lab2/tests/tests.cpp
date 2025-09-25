@@ -82,3 +82,11 @@ TEST(AverageSearh, SingleNumberCase) {
 	EXPECT_EQ(searchAverage(&data), 0);
 	EXPECT_EQ(data.average, 6);
 }
+
+TEST(AverageSearh, HugeNumbers) {
+	std::vector<int> arr = { 1000000000, 1500000000, 2000000000};
+	ArrayData data(&arr, 0, 0, 0);
+
+	EXPECT_EQ(searchAverage(&data), 0);
+	EXPECT_EQ(data.average, 1500000000);
+}

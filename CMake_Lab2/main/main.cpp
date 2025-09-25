@@ -3,9 +3,10 @@
 
 int main() {
 
+	const int SIZE = 10000;
 	int n;
 	try {
-		std::cout << "Enter the array size (n < 10000):\n";
+		std::cout << "Enter the array size (n <"<< SIZE<<"):\n";
 		std::cin >> n;
 
 		if (std::cin.fail()) {
@@ -26,7 +27,7 @@ int main() {
 	while (true)
 		try {
 
-		std::cout << "Enter the array elements separated by a space\n";
+		std::cout << "Enter the array elements (< 2,147,483,647)separated by a space\n";
 		for (int i = 0; i < n; i++) {
 			std::cin >> array[i];
 		}

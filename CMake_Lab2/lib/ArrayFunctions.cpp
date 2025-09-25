@@ -23,6 +23,7 @@ DWORD WINAPI searchMinMaxElement(LPVOID lpData) {
 		if (arrayData->maxElement < arr[i]) {
 			arrayData->maxElement = arr[i];
 		}
+		Sleep(7);
 		if (arrayData->minElement > arr[i]) {
 			arrayData->minElement = arr[i];
 		}
@@ -44,7 +45,7 @@ DWORD WINAPI searchAverage(LPVOID lpData) {
 	}
 	std::vector<int>& arr = *arrayData->array;
 
-	int sum = 0;
+	long long sum = 0;
 	for (int i = 0; i < arr.size(); i++) {
 		sum += arr[i];
 		Sleep(12);
