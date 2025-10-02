@@ -4,21 +4,23 @@
 
 int main() {
 
-	const int SIZE = 10000;
+	constexpr int MAX_ARRAY_SIZE = 10000;
+	constexpr int CHARACTERS_TO_IGNORE = 10000;
+
 	int n;
 
-	std::cout << "Enter the array size (n <" << SIZE << "):\n";
+	std::cout << "Enter the array size (n <" << MAX_ARRAY_SIZE << "):\n";
 	while (true) {
 		std::cin >> n;
 
 		if (std::cin.fail()) {
 			std::cin.clear();
-			std::cin.ignore(10000, '\n');
-			std::cout << "Invalid input. Enter an integer n > 0 and < 10000\n";
+			std::cin.ignore(CHARACTERS_TO_IGNORE, '\n');
+			std::cout << "Invalid input. Enter an integer n > 0 and < " << MAX_ARRAY_SIZE << "\n";
 			continue;
 		}
-		if (n <= 0 || n >= 10000) {
-			std::cout << "Invalid input. Enter n > 0 and < 10000\n";
+		if (n <= 0 || n >= MAX_ARRAY_SIZE) {
+			std::cout << "Invalid input. Enter n > 0 and < " << MAX_ARRAY_SIZE << "\n";
 			continue;
 		}
 		break;
@@ -26,7 +28,7 @@ int main() {
 
 	std::vector<int> array(n);
 
-	std::cout << "Enter the array elements (< 2,147,483,647) separated by a space\n";
+	std::cout << "Enter the array elements (< " << INT_MAX << ") separated by a space\n";
 	while (true) {
 
 		for (int i = 0; i < n; i++) {
@@ -34,8 +36,8 @@ int main() {
 		}
 		if (std::cin.fail()) {
 			std::cin.clear();
-			std::cin.ignore(10000, '\n');
-			std::cout << "Invalid input. Enter an integer n < 2,147,483,647\n";
+			std::cin.ignore(CHARACTERS_TO_IGNORE, '\n');
+			std::cout << "Invalid input. Enter an integer n < " << INT_MAX << "\n";
 			continue;
 		}
 		break;
@@ -45,9 +47,9 @@ int main() {
 	HANDLE hMinMax = NULL;
 	HANDLE hAverage = NULL;
 	try {
-		
+
 		HANDLE hMinMax = CreateThread(NULL, 0, searchMinMaxElement, &arrayData, 0, NULL);
-	   
+
 		HANDLE hAverage = CreateThread(NULL, 0, searchAverage, &arrayData, 0, NULL);
 
 		if (hMinMax == NULL || hAverage == NULL) {

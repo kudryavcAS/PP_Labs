@@ -2,7 +2,10 @@
 #include <iostream>
 #include <windows.h>
 
-ArrayData::ArrayData(std::vector<int>* _array, int _max, int _min, int _average)
+constexpr short MINMAX_TIME_OUT = 7;
+constexpr short AVERAGE_TIME_OUT = 12;
+
+ArrayData::ArrayData(const std::vector<int>* _array, int _max, int _min, int _average)
 	: array(_array), maxElement(_max), minElement(_min), average(_average) {
 }
 
@@ -14,7 +17,7 @@ DWORD WINAPI searchMinMaxElement(LPVOID lpData) {
 	if (arrayData->array->empty()) {
 		return 0;
 	}
-	std::vector<int>& arr = *arrayData->array;
+	const std::vector<int>& arr = *arrayData->array;
 	arrayData->minElement = arr[0];
 	arrayData->maxElement = arr[0];
 
@@ -23,12 +26,11 @@ DWORD WINAPI searchMinMaxElement(LPVOID lpData) {
 		if (arrayData->maxElement < arr[i]) {
 			arrayData->maxElement = arr[i];
 		}
-		Sleep(7);
+		Sleep(MINMAX_TIME_OUT);
 		if (arrayData->minElement > arr[i]) {
 			arrayData->minElement = arr[i];
 		}
-
-		Sleep(7);
+		Sleep(MINMAX_TIME_OUT);
 	}
 
 	std::cout << "Minimum element of the array: " << arrayData->minElement
@@ -43,12 +45,12 @@ DWORD WINAPI searchAverage(LPVOID lpData) {
 	if (arrayData->array->empty()) {
 		return 0;
 	}
-	std::vector<int>& arr = *arrayData->array;
+	const std::vector<int>& arr = *arrayData->array;
 
 	long long sum = 0;
 	for (int i = 0; i < arr.size(); i++) {
 		sum += arr[i];
-		Sleep(12);
+		Sleep(AVERAGE_TIME_OUT);
 	}
 	arrayData->average = static_cast<int>(std::round(static_cast<double>(sum) / arr.size()));
 

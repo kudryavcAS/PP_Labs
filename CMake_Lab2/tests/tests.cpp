@@ -1,92 +1,97 @@
-#include<gtest/gtest.h>
+#include <gtest/gtest.h>
 #include "ArrayFunctions.h"
+#include <tuple>
 
-TEST(MinMaxSearch, SimpleArrayCase) {
-	std::vector<int> arr = { 5, 2, 8, 1, 9, 3 };
+auto runMinMaxTest(const std::vector<int>& arr) {
 	ArrayData data(&arr, 0, 0, 0);
+	DWORD result = searchMinMaxElement(&data);
+	return std::tuple{ result, data.minElement, data.maxElement };
+}
 
-	EXPECT_EQ(searchMinMaxElement(&data), 0);
-	EXPECT_EQ(data.minElement, 1);
-	EXPECT_EQ(data.maxElement, 9);
+auto runAverageTest(const std::vector<int>& arr) {
+	ArrayData data(&arr, 0, 0, 0);
+	DWORD result = searchAverage(&data);
+	return std::tuple{ result, data.average };
+}
+TEST(MinMaxSearch, SimpleArrayCase) {
+	auto [result, min, max] = runMinMaxTest({ 5, 2, 8, 1, 9, 3 });
+
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(min, 1);
+	EXPECT_EQ(max, 9);
 }
 
 TEST(MinMaxSearch, SimilarNumbersCase) {
-	std::vector<int> arr = { 2, 2, 2, 2, 2, 2 };
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, min, max] = runMinMaxTest({ 2, 2, 2, 2, 2, 2 });
 
-	EXPECT_EQ(searchMinMaxElement(&data), 0);
-	EXPECT_EQ(data.minElement, 2);
-	EXPECT_EQ(data.maxElement, 2);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(min, 2);
+	EXPECT_EQ(max, 2);
 }
 
 TEST(MinMaxSearch, NegativeNumbersCase) {
-	std::vector<int> arr = { -2, -3, -4, -5, -10, -1900 };
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, min, max] = runMinMaxTest({ -2, -3, -4, -5, -10, -1900 });
 
-	EXPECT_EQ(searchMinMaxElement(&data), 0);
-	EXPECT_EQ(data.minElement, -1900);
-	EXPECT_EQ(data.maxElement, -2);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(min, -1900);
+	EXPECT_EQ(max, -2);
 }
 
 TEST(MinMaxSearch, SingleNumberCase) {
-	std::vector<int> arr = { 5 };
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, min, max] = runMinMaxTest({ 5 });
 
-	EXPECT_EQ(searchMinMaxElement(&data), 0);
-	EXPECT_EQ(data.minElement, 5);
-	EXPECT_EQ(data.maxElement, 5);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(min, 5);
+	EXPECT_EQ(max, 5);
 }
 
 TEST(MinMaxSearch, EmptyArrayCase) {
-	std::vector<int> arr = {};
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, min, max] = runMinMaxTest({});
 
-	EXPECT_EQ(searchMinMaxElement(&data), 0);
+	EXPECT_EQ(result, 0);
 }
 
 TEST(AverageSearh, EmptyArrayCase) {
-	std::vector<int> arr = {};
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, average] = runAverageTest({});
 
-	EXPECT_EQ(searchAverage(&data), 0);
+	EXPECT_EQ(result, 0);
 }
 
 TEST(AverageSearh, SimpleArrayCase) {
 	std::vector<int> arr = { 5, 2, 8, 1, 9, 3 };
 	ArrayData data(&arr, 0, 0, 0);
+	auto [result, average] = runAverageTest({ 5, 2, 8, 1, 9, 3 });
 
-	EXPECT_EQ(searchAverage(&data), 0);
-	EXPECT_EQ(data.average, 5);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(average, 5);
 }
 
 TEST(AverageSearh, SimilarNumbersCase) {
-	std::vector<int> arr = { 5, 5, 5, 5, 5, 5 };
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, average] = runAverageTest({ 5, 5, 5, 5, 5, 5 });
 
-	EXPECT_EQ(searchAverage(&data), 0);
-	EXPECT_EQ(data.average, 5);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(average, 5);
 }
 
 TEST(AverageSearh, NegativeNumbersCase) {
 	std::vector<int> arr = { -2, -3, -4, -5, -10, -13 };
 	ArrayData data(&arr, 0, 0, 0);
+	auto [result, average] = runAverageTest({ -2, -3, -4, -5, -10, -13 });
 
-	EXPECT_EQ(searchAverage(&data), 0);
-	EXPECT_EQ(data.average, -6);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(average, -6);
 }
 
 TEST(AverageSearh, SingleNumberCase) {
-	std::vector<int> arr = { 6 };
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, average] = runAverageTest({ 6 });
 
-	EXPECT_EQ(searchAverage(&data), 0);
-	EXPECT_EQ(data.average, 6);
+	EXPECT_EQ(result, 0); 
+	EXPECT_EQ(average, 6);
 }
 
 TEST(AverageSearh, HugeNumbers) {
-	std::vector<int> arr = { 1000000000, 1500000000, 2000000000};
-	ArrayData data(&arr, 0, 0, 0);
+	auto [result, average] = runAverageTest({ 1000000000, 1500000000, 2000000000 });
 
-	EXPECT_EQ(searchAverage(&data), 0);
-	EXPECT_EQ(data.average, 1500000000);
+	EXPECT_EQ(result, 0);
+	EXPECT_EQ(average, 1500000000);
 }

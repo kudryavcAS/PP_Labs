@@ -3,10 +3,10 @@
 #include <windows.h>
 
 struct ArrayData {
-    std::vector<int>* array;
+    const std::vector<int>* array;
     int maxElement, minElement, average;
 
-    ArrayData(std::vector<int>* _array, int _max, int _min, int _average);
+    ArrayData(const std::vector<int>* _array, int _max, int _min, int _average);
     ArrayData();
 };
 
