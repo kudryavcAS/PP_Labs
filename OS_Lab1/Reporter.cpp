@@ -2,13 +2,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-
-struct employee {
-   int num;
-   char name[10];
-   double hours;
-};
-
+#include "employee.h"
 
 int main(int argc, char* argv[]) {
    std::iostream::sync_with_stdio(false);
@@ -21,7 +15,7 @@ int main(int argc, char* argv[]) {
 
    string binFileName = argv[1];
    string reportFileName = argv[2];
-   double xPerHour = std::stoi(argv[3]);
+   double xPerHour = std::stod(argv[3]);
 
    std::ifstream in(binFileName, std::ios::binary);
    if (!in) {
@@ -36,7 +30,7 @@ int main(int argc, char* argv[]) {
       return 1;
    }
 
-   out << "\tReport on the file: \"" << binFileName << "\"\n";
+   out << "\tReport on the file \"" << binFileName << "\":\n";
    out << std::left << std::setw(15) << "Employee ID";
    out << std::left << std::setw(15) << "Employee name";
    out << std::left << std::setw(15) << "Employee hours";
