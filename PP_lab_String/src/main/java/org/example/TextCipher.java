@@ -8,7 +8,7 @@ public class TextCipher {
         Scanner in = new Scanner(System.in);
         StringBuilder text = new StringBuilder();
 
-        System.out.println("Enter the line (to complete, press enter):");
+        System.out.println("Enter the lines (to complete, enter an empty line):");
 
         while (true) {
             String line = in.nextLine();
@@ -20,8 +20,6 @@ public class TextCipher {
         text.deleteCharAt(text.length() - 1);
 
         System.out.println(encryptText(text.toString()));
-
-
     }
 
     static String encryptText(String text) {
