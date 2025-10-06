@@ -28,7 +28,6 @@ class GraphTest{
     void testConstructorZeroVertices() {
         assertThrows(IllegalArgumentException.class, () -> new Graph(0));
     }
-
     @Test
     void testConstructorNegativeVertices() {
         assertThrows(IllegalArgumentException.class, () -> new Graph(-5));
@@ -41,7 +40,6 @@ class GraphTest{
         assertTrue(graph.hasEdge(2, 1));
         assertEquals(1, graph.getEdgesCount());
     }
-
     @Test
     void testAddEdgeToAllVertices() {
         graph.addEdge(1, 2);
@@ -56,7 +54,6 @@ class GraphTest{
         assertEquals(new HashSet<>(Collections.singletonList(1)), graph.getNeighbors(4));
         assertEquals(new HashSet<>(Collections.singletonList(1)), graph.getNeighbors(5));
     }
-
     @Test
     void testAddEdgeChain() {
         graph.addEdge(1, 2);
@@ -71,7 +68,6 @@ class GraphTest{
         assertTrue(graph.hasEdge(4, 5));
         assertFalse(graph.hasEdge(1, 5));
     }
-
     @Test
     void testAddEdgeSelfLoop() {
         assertEquals(5, graph.getVerticesCount());
@@ -92,7 +88,6 @@ class GraphTest{
         assertTrue(graph.hasEdge(2, 3));
         assertEquals(1, graph.getEdgesCount());
     }
-
     @Test
     void testRemoveNonExistent() {
         graph.removeEdge(1, 2);
@@ -109,7 +104,6 @@ class GraphTest{
         assertTrue(graph.hasEdge(1, 2));
         assertTrue(graph.hasEdge(2, 1));
     }
-
     @Test
     void testHasEdgeMultipleOperations() {
         assertFalse(graph.hasEdge(1, 2));
@@ -123,7 +117,6 @@ class GraphTest{
         graph.addEdge(1, 2);
         assertTrue(graph.hasEdge(1, 2));
     }
-
     @Test
     void testHasEdgeForAllPossiblePairs() {
         Graph smallGraph = new Graph(3);
@@ -151,7 +144,6 @@ class GraphTest{
 
         assertEquals(expected, neighbors);
     }
-
     @Test
     void testGetNeighborsAfterEdgeRemoval() {
         graph.addEdge(1, 2);
@@ -165,7 +157,6 @@ class GraphTest{
         Set<Integer> afterRemoval = graph.getNeighbors(1);
         assertEquals(new HashSet<>(Arrays.asList(2, 4)), afterRemoval);
     }
-
     @Test
     void testGetNeighborsForIsolatedVertex() {
         Set<Integer> neighbors = graph.getNeighbors(1);
@@ -180,7 +171,6 @@ class GraphTest{
         assertTrue(finalNeighbors.isEmpty());
     }
 
-
     @Test
     void testGetEdgesCountWithEdges() {
         graph.addEdge(1, 2);
@@ -189,7 +179,6 @@ class GraphTest{
 
         assertEquals(3, graph.getEdgesCount());
     }
-
 
     @Test
     void testGetVerticesCount() {

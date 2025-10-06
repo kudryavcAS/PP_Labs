@@ -9,7 +9,7 @@ public class GraphDemo {
         int count;
 
         while (true) {
-            System.out.println("Enter the number of edges:");
+            System.out.println("Enter the number of vertices:");
 
             count = in.nextInt();
             if (count >= 1) {
