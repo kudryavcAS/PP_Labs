@@ -1,6 +1,4 @@
-﻿#include "ArrayFunctions.h"
-#include <iostream>
-#include <string>
+﻿#include "CMake_Lab2.h"
 
 int main() {
 
