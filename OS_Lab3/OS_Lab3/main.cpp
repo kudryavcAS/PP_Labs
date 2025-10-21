@@ -1,7 +1,47 @@
 ﻿// OS_Lab3.cpp: определяет точку входа для приложения.
-//
+//C++11
 
 #include "main.h"
+
+int arraySize = 0;
+int* array = nullptr;
+
+CRITICAL_SECTION arrayCS;
+
+HANDLE threadStartEvent;
+
+
+DWORD WINAPI markerThread(LPVOID lpParam) {
+	int number = (int)lpParam, markedCount = 0;
+
+	WaitForSingleObject(threadStartEvent, INFINITE);
+
+	srand(number);
+
+	while (true) {
+		int randomValue = rand();
+		int i = randomValue % arraySize;
+
+		EnterCriticalSection(&arrayCS);
+		if (array[i] == 0) {
+			Sleep(5);
+			
+			array[i] = number;
+			markedCount++;
+
+			LeaveCriticalSection(&arrayCS);
+
+			Sleep(5);
+		}
+		else {
+			std::cout << "Number of thread: " << number
+				<< "\nCount of marked elements: " << markedCount
+				<< "\nIndex of ubmarked elements: " << i;
+		}
+
+	}
+
+}
 
 void inputNatural(int& integer) {
 	while (true) {
@@ -29,12 +69,12 @@ int main()
 	inputNatural(size);
 	std::cout << size;
 
-	std::unique_ptr<int[]> array(new int[size]);
+	array = new int[size];
 	for (int i = 0; i < size; i++) {
 		array[i] = 0;
 	}
 
-	std::cout << "\nЗапросить количество потоков marker, которые требуется запустить.";
+	std::cout << "\nEnter the number of marker threads:\n";
 	inputNatural(count);
 	std::cout << count;
 

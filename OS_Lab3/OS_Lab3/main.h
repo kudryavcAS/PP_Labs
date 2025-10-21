@@ -5,5 +5,6 @@
 
 #include <iostream>
 #include <Windows.h>
+#include <ctime>
 
 // TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
