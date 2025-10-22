@@ -1,22 +1,23 @@
 ﻿// OS_Lab3.cpp: определяет точку входа для приложения.
-//C++11
+// C++11
 
 #include "main.h"
 
 int arraySize = 0;
-int* array = nullptr;
-
+std::unique_ptr<int[]>array;
 CRITICAL_SECTION arrayCS;
 
 HANDLE threadStartEvent;
-
+std::unique_ptr<HANDLE[]> threadContinueEvents;
+std::unique_ptr<HANDLE[]> threadStopEvents;
+std::unique_ptr<HANDLE[]> threadCannotContinueEvents;
+std::unique_ptr<bool[]> threadTerminated;
 
 DWORD WINAPI markerThread(LPVOID lpParam) {
 	int number = (int)lpParam, markedCount = 0;
+	srand(number);
 
 	WaitForSingleObject(threadStartEvent, INFINITE);
-
-	srand(number);
 
 	while (true) {
 		int randomValue = rand();
@@ -25,7 +26,7 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 		EnterCriticalSection(&arrayCS);
 		if (array[i] == 0) {
 			Sleep(5);
-			
+
 			array[i] = number;
 			markedCount++;
 
@@ -35,42 +36,81 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 		}
 		else {
 			std::cout << "Number of thread: " << number
-				<< "\nCount of marked elements: " << markedCount
-				<< "\nIndex of ubmarked elements: " << i;
-		}
+				<< ". Count of marked elements: " << markedCount
+				<< ". Index of ubmarked elements: " << i;
 
+			LeaveCriticalSection(&arrayCS);
+			SetEvent(threadCannotContinueEvents[number - 1]);
+
+			HANDLE waitEvents[2] = {
+				 threadContinueEvents[number - 1],
+				 threadStopEvents[number - 1]
+			};
+
+			DWORD result = WaitForMultipleObjects(2, waitEvents, FALSE, INFINITE);
+
+			if (result == WAIT_OBJECT_0 + 1) {
+				EnterCriticalSection(&arrayCS);
+
+				for (int i = 0; i < arraySize; i++) {
+					if (array[i] == number) {
+						array[i] = 0;
+					}
+
+				}
+
+				LeaveCriticalSection(&arrayCS);
+
+				std::cout << "Thread " << number << " terminated.\n";
+				threadTerminated[number - 1] = true;
+				return 0;
+			}
+		}
 	}
 
+	return 0;
 }
 
-void inputNatural(int& integer) {
+void inputNatural(int& integer, int max = INT_MAX) {
 	while (true) {
 		std::cin >> integer;
 
 		if (std::cin.fail()) {
 			std::cin.clear();
-			std::cin.ignore(INT_MAX, '\n');
-			std::cout << "Invalid input. Enter an integer n > 0 and < " << INT_MAX << "\n";
+			std::cin.ignore(max, '\n');
+			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
 			continue;
 		}
-		if (integer <= 0) {
-			std::cout << "Invalid input. Enter n > 0\n";
+		if (integer <= 0 || integer > max) {
+			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
 			continue;
 		}
 		break;
 	}
 }
 
+void printArray(int* array, int arraySize) {
+	EnterCriticalSection(&arrayCS);
+
+	std::cout << "Array: ";
+	for (int i = 0; i < arraySize; i++) {
+		std::cout << array[i] << "\t";
+	}
+	std::cout << "\n";
+
+	LeaveCriticalSection(&arrayCS);
+}
+
 int main()
 {
-	int size, count;
+	int count;
 
 	std::cout << "Enter the array size:\n";
-	inputNatural(size);
-	std::cout << size;
+	inputNatural(arraySize);
+	std::cout << arraySize;
 
-	array = new int[size];
-	for (int i = 0; i < size; i++) {
+	array = std::make_unique<int[]>(arraySize);
+	for (int i = 0; i < arraySize; i++) {
 		array[i] = 0;
 	}
 
@@ -78,7 +118,66 @@ int main()
 	inputNatural(count);
 	std::cout << count;
 
+	InitializeCriticalSection(&arrayCS);
 
+	threadStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
+	threadContinueEvents = std::make_unique<HANDLE[]>(count);
+	threadStopEvents = std::make_unique<HANDLE[]>(count);
+	threadCannotContinueEvents = std::make_unique<HANDLE[]>(count);
+	threadTerminated = std::make_unique<bool[]>(count);
+	auto threadHandles = std::make_unique<HANDLE[]>(count);
+
+	for (int i = 0; i < count; i++) {
+		threadContinueEvents[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
+		threadStopEvents[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
+		threadCannotContinueEvents[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
+		threadTerminated[i] = false;
+
+		threadHandles[i] = CreateThread(NULL, 0, markerThread, (LPVOID)(i + 1), 0, NULL);
+
+		if (threadHandles[i] == NULL) {
+			std::cout << "Error creating thread " << i + 1 << std::endl;
+			return 1;
+		}
+	}
+	SetEvent(threadStartEvent);
+	int activeThreads = count;
+
+	while (activeThreads > 0) {
+		WaitForMultipleObjects(count, threadCannotContinueEvents.get(), TRUE, INFINITE);
+
+		printArray(array.get(), arraySize);
+
+		int threadToTerminate;
+		std::cout << "Enter thread number to terminate (1-" << count << "): ";
+		inputNatural(threadToTerminate, count);
+
+		SetEvent(threadStopEvents[threadToTerminate - 1]);
+		WaitForSingleObject(threadHandles[threadToTerminate - 1], INFINITE);
+		threadTerminated[threadToTerminate - 1] = true;
+
+		printArray(array.get(), arraySize);
+
+		for (int i = 0; i < count; i++) {
+			if (!threadTerminated[i]) {
+				SetEvent(threadContinueEvents[i]);
+			}
+		}
+		activeThreads--;
+
+	}
+	CloseHandle(threadStartEvent);
+
+	for (int i = 0; i < count; i++) {
+		CloseHandle(threadContinueEvents[i]);
+		CloseHandle(threadStopEvents[i]);
+		CloseHandle(threadCannotContinueEvents[i]);
+		CloseHandle(threadHandles[i]);
+	}
+
+	DeleteCriticalSection(&arrayCS);
+
+	std::cout << "All threads completed. Program finished." << std::endl;
 	return 0;
 }
