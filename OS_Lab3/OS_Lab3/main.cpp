@@ -37,7 +37,7 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 		else {
 			std::cout << "Number of thread: " << number
 				<< ". Count of marked elements: " << markedCount
-				<< ". Index of ubmarked elements: " << i;
+				<< ". Index of unmarked elements: " << i<<"\n";
 
 			LeaveCriticalSection(&arrayCS);
 			SetEvent(threadCannotContinueEvents[number - 1]);
@@ -107,26 +107,26 @@ int main()
 
 	std::cout << "Enter the array size:\n";
 	inputNatural(arraySize);
-	std::cout << arraySize;
 
 	array = std::make_unique<int[]>(arraySize);
 	for (int i = 0; i < arraySize; i++) {
 		array[i] = 0;
 	}
 
-	std::cout << "\nEnter the number of marker threads:\n";
+	std::cout << "Enter the number of marker threads:\n";
 	inputNatural(count);
-	std::cout << count;
 
 	InitializeCriticalSection(&arrayCS);
 
-	threadStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	
+		threadStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	threadContinueEvents = std::make_unique<HANDLE[]>(count);
-	threadStopEvents = std::make_unique<HANDLE[]>(count);
-	threadCannotContinueEvents = std::make_unique<HANDLE[]>(count);
-	threadTerminated = std::make_unique<bool[]>(count);
-	auto threadHandles = std::make_unique<HANDLE[]>(count);
+		threadContinueEvents = std::make_unique<HANDLE[]>(count);
+		threadStopEvents = std::make_unique<HANDLE[]>(count);
+		threadCannotContinueEvents = std::make_unique<HANDLE[]>(count);
+		threadTerminated = std::make_unique<bool[]>(count);
+		auto threadHandles = std::make_unique<HANDLE[]>(count);
+	
 
 	for (int i = 0; i < count; i++) {
 		threadContinueEvents[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -145,7 +145,16 @@ int main()
 	int activeThreads = count;
 
 	while (activeThreads > 0) {
-		WaitForMultipleObjects(count, threadCannotContinueEvents.get(), TRUE, INFINITE);
+		std::vector<HANDLE> activeEvents;
+		for (int i = 0; i < count; i++) {
+			if (!threadTerminated[i]) {
+				activeEvents.push_back(threadCannotContinueEvents[i]);
+			}
+		}
+
+		if (activeEvents.empty()) break;
+
+		WaitForMultipleObjects(activeEvents.size(), activeEvents.data(), TRUE, INFINITE);
 
 		printArray(array.get(), arraySize);
 

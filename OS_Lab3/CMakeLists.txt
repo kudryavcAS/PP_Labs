@@ -13,3 +13,8 @@ project ("OS_Lab3")
 
 # Включите подпроекты.
 add_subdirectory ("OS_Lab3")
+add_subdirectory("tests")
+
+include(CTest)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+enable_testing()
