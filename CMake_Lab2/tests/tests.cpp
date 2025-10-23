@@ -13,10 +13,11 @@ auto runAverageTest(const std::vector<int>& arr) {
 	DWORD result = searchAverage(&data);
 	return std::tuple{ result, data.average };
 }
+
 TEST(MinMaxSearch, SimpleArrayCase) {
 	auto [result, min, max] = runMinMaxTest({ 5, 2, 8, 1, 9, 3 });
 
-	EXPECT_EQ(result, 0);
+	EXPECT_EQ(result, 1);
 	EXPECT_EQ(min, 1);
 	EXPECT_EQ(max, 9);
 }

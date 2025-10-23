@@ -9,7 +9,7 @@
 #include <vector>
 
 // Объявления функций для тестирования
-void inputNatural(int& integer, int max = INT_MAX);
+void inputNatural(int& integer, int max);
 void printArray(int* array, int arraySize);
 
 // Глобальные переменные (нужны для printArray)
