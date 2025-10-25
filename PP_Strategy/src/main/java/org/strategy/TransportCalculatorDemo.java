@@ -9,8 +9,8 @@ public class TransportCalculatorDemo {
         System.out.println("Calculate time and cost for your trip\n");
 
         double distance = getInputDouble("Enter distance (km): ");
-        double cargoWeight = getInputDouble("Enter cargo weight (kg): ");
-        int passengers = getInputInt("Enter number of passengers: ");
+        double cargoWeight = getInputDouble("Enter cargo weight <= 500 (kg): ");
+        int passengers = getInputInt("Enter number of passengers: <= 8: ");
 
         TransportType transportType = selectTransport();
 
@@ -58,10 +58,13 @@ public class TransportCalculatorDemo {
     }
 
     private static TransportType selectTransport() {
-        System.out.println("\nSelect transport type:");
-        System.out.println("1. Car - fast, comfortable, higher cost");
-        System.out.println("2. Bicycle - low cost, only for cargo");
-        System.out.println("3. Cart - for heavy cargo, slow");
+        System.out.println("\nSelect transport type: ");
+        System.out.println("1. Car - max passengers: "+ CarOperation.getMaxPassengers()+
+                " max weight: "+ CarOperation.getMaxCargoWeight());
+        System.out.println("2. Bicycle - max passengers: "+ BicycleOperation.getMaxPassengers()+
+                " max weight: "+ BicycleOperation.getMaxCargoWeight());
+        System.out.println("3. Cart - max passengers: "+ CartOperation.getMaxPassengers()+
+                " max weight: "+ CartOperation.getMaxCargoWeight());
 
         int choice;
         while (true) {
