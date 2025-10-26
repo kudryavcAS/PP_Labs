@@ -19,10 +19,10 @@ public class TransportCalculatorDemo {
         in.close();
     }
 
-    private static double getInputDouble(String prompt) {
+    private static double getInputDouble(String request) {
         double value;
         while (true) {
-            System.out.print(prompt);
+            System.out.print(request);
             if (in.hasNextDouble()) {
                 value = in.nextDouble();
                 if (value >= 0) {
@@ -38,10 +38,10 @@ public class TransportCalculatorDemo {
         }
     }
 
-    private static int getInputInt(String prompt) {
+    private static int getInputInt(String request) {
         int value;
         while (true) {
-            System.out.print(prompt);
+            System.out.print(request);
             if (in.hasNextInt()) {
                 value = in.nextInt();
                 if (value >= 0) {
@@ -85,7 +85,7 @@ public class TransportCalculatorDemo {
                 }
             } else {
                 System.out.println("Invalid input. Please enter a number (1-3).");
-                in.next(); // очистка неверного ввода
+                in.next();
             }
         }
     }

@@ -26,7 +26,7 @@ public class BicycleOperation implements TransportOperation {
         return 0.0;
     }
 
-    private void validateCapacity(double cargoWeight, int passengers) {
+    void validateCapacity(double cargoWeight, int passengers) {
         if (cargoWeight > MAX_CARGO_WEIGHT) {
             throw new IllegalArgumentException(
                     String.format("Bicycle cannot carry more than %.1f kg. Requested: %.1f kg",

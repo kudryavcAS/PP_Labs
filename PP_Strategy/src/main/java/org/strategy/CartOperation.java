@@ -24,7 +24,7 @@ public class CartOperation implements TransportOperation {
         return distance * 0.2 + passengers * 25.0;
     }
 
-    private void validateCapacity(double cargoWeight, int passengers) {
+    void validateCapacity(double cargoWeight, int passengers) {
         if (cargoWeight > MAX_CARGO_WEIGHT) {
             throw new IllegalArgumentException(
                     String.format("Cart cannot carry more than %.1f kg. Requested: %.1f kg",
