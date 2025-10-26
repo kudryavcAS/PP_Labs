@@ -19,7 +19,7 @@ public class TransportCalculator {
         }
     }
 
-    public void calculateFullTrip(double distance, double cargoWeight, int passengers) {
+    public boolean calculateFullTrip(double distance, double cargoWeight, int passengers) {
         if (operation == null) {
             throw new IllegalStateException("Transport operation is not set");
         }
@@ -47,6 +47,7 @@ public class TransportCalculator {
         System.out.printf("Cargo cost: %.2f $.%n", cargoCost);
         System.out.printf("Passenger cost: %.2f $.%n", passengerCost);
         System.out.printf("Total cost: %.2f $.%n", totalCost);
+        return true;
     }
 
     public double getTime(double distance, double cargoWeight) {
@@ -85,7 +86,7 @@ public class TransportCalculator {
         return operation.calculatePassengerCost(distance, passengers);
     }
 
-    private String getTransportName() {
+    String getTransportName() {
         if (operation instanceof CarOperation) {
             return "Car";
         }
