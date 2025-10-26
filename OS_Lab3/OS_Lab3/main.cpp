@@ -1,11 +1,10 @@
 ﻿// OS_Lab3.cpp: определяет точку входа для приложения.
 // C++11
 
-#include "main.h"
+#include "winapi.h"
 
 int arraySize = 0;
 std::unique_ptr<int[]>array;
-CRITICAL_SECTION arrayCS;
 
 HANDLE threadStartEvent;
 std::unique_ptr<HANDLE[]> threadContinueEvents;
@@ -71,35 +70,6 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 	return 0;
 }
 
-void inputNatural(int& integer, int max = INT_MAX) {
-	while (true) {
-		std::cin >> integer;
-
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(INT_MAX, '\n');
-			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
-			continue;
-		}
-		if (integer <= 0 || integer > max) {
-			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
-			continue;
-		}
-		break;
-	}
-}
-
-void printArray(int* array, int arraySize) {
-	EnterCriticalSection(&arrayCS);
-
-	std::cout << "Array: ";
-	for (int i = 0; i < arraySize; i++) {
-		std::cout << array[i] << "\t";
-	}
-	std::cout << "\n";
-
-	LeaveCriticalSection(&arrayCS);
-}
 
 int main()
 {

@@ -27,4 +27,4 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_subdirectory ("OS_Lab3")
-#add_subdirectory ("tests")
+add_subdirectory ("tests")

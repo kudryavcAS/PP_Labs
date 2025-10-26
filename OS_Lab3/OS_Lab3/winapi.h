@@ -8,10 +8,8 @@
 #include <ctime>
 #include <vector>
 
-// Объявления функций для тестирования
-void inputNatural(int& integer, int max);
+void inputNatural(int& integer, int max = INT_MAX);
 void printArray(int* array, int arraySize);
 
-// Глобальные переменные (нужны для printArray)
 extern CRITICAL_SECTION arrayCS;
 // TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
