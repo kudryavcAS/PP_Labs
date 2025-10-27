@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/src/main/java/org/example/FileProcessing.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../PP_KR_1/src/test/java/org/example/FileProcessingTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/f1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/f2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/Operations.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentDifference.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentOperation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentOperationDemo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentUnion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="Enum" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="34e6m9YgTkZuV7jZnozXZm07bhu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.StudentOperationDemo.executor": "Run",
+    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="" />
+      <created>1761561848062</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1761561848062</updated>
+    </task>
+    <servers />
+  </component>
+</project>
