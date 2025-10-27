@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentDifferenceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentIntersectionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentUnionTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/students/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/students/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,17 +19,17 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="34e6m9YgTkZuV7jZnozXZm07bhu" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -37,14 +38,39 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.StudentOperationDemo.executor": "Run",
+    "JUnit.All in PP_lab_4.1.executor": "Run",
     "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "Maven.PP_lab_4.1 [clean].executor": "Run",
+    "Maven.PP_lab_4.1 [io.qameta.allure:allure-maven:2.12.0:report].executor": "Run",
+    "Maven.PP_lab_4.1 [io.qameta.allure:allure-maven:2.12.0:serve].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true"
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Y/PP_Labs/PP_lab_4.1"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Y\PP_Labs\PP_lab_4.1\target" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="All in PP_lab_4.1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PP_lab_4.1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.All in PP_lab_4.1" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="" />
