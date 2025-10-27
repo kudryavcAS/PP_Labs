@@ -60,6 +60,6 @@ public class Student {
         if (obj == null || getClass() != obj.getClass()) return false;
 
         Student student = (Student) obj;
-        return (num == student.num && name == student.name && group == student.group && grade == student.grade);
+        return (num == student.num && name.equals(student.name) && group == student.group && grade == student.grade);
     }
 }

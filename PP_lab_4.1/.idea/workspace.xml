@@ -5,27 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/src/main/java/org/example/FileProcessing.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../PP_KR_1/src/test/java/org/example/FileProcessingTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/f1.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/f2.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/Operations.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/Student.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentDifference.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentOperation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentOperationDemo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentUnion.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/students/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/students/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/students/StudentOperationTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,5 +54,16 @@
       <updated>1761561848062</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java</url>
+          <line>9</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
