@@ -12,4 +12,5 @@ void inputNatural(int& integer, int max = INT_MAX);
 void printArray(int* array, int arraySize);
 
 extern CRITICAL_SECTION arrayCS;
+extern CRITICAL_SECTION consoleCS;
 // TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.

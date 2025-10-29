@@ -34,11 +34,13 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 			Sleep(5);
 		}
 		else {
+
 			std::cout << "Number of thread: " << number
 				<< ". Count of marked elements: " << markedCount
-				<< ". Index of unmarked elements: " << i<<"\n";
-
+				<< ". Index of unmarked elements: " << i << "\n";
+			LeaveCriticalSection(&consoleCS);
 			LeaveCriticalSection(&arrayCS);
+
 			SetEvent(threadCannotContinueEvents[number - 1]);
 
 			HANDLE waitEvents[2] = {
@@ -61,6 +63,7 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 				LeaveCriticalSection(&arrayCS);
 
 				std::cout << "Thread " << number << " terminated.\n";
+				LeaveCriticalSection(&consoleCS);
 				threadTerminated[number - 1] = true;
 				return 0;
 			}
@@ -73,6 +76,8 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 
 int main()
 {
+	std::cout.setf(std::ios::unitbuf);
+
 	int count;
 
 	std::cout << "Enter the array size:\n";
@@ -84,19 +89,20 @@ int main()
 	}
 
 	std::cout << "Enter the number of marker threads:\n";
-	inputNatural(count);
+	inputNatural(count, 64);
+
 
 	InitializeCriticalSection(&arrayCS);
+	InitializeCriticalSection(&consoleCS);
 
-	
-		threadStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	threadStartEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-		threadContinueEvents = std::make_unique<HANDLE[]>(count);
-		threadStopEvents = std::make_unique<HANDLE[]>(count);
-		threadCannotContinueEvents = std::make_unique<HANDLE[]>(count);
-		threadTerminated = std::make_unique<bool[]>(count);
-		auto threadHandles = std::make_unique<HANDLE[]>(count);
-	
+	threadContinueEvents = std::make_unique<HANDLE[]>(count);
+	threadStopEvents = std::make_unique<HANDLE[]>(count);
+	threadCannotContinueEvents = std::make_unique<HANDLE[]>(count);
+	threadTerminated = std::make_unique<bool[]>(count);
+	auto threadHandles = std::make_unique<HANDLE[]>(count);
+
 
 	for (int i = 0; i < count; i++) {
 		threadContinueEvents[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -129,6 +135,7 @@ int main()
 		printArray(array.get(), arraySize);
 
 		int threadToTerminate;
+
 		std::cout << "Enter thread number to terminate (1-" << count << "): ";
 		inputNatural(threadToTerminate, count);
 
@@ -155,8 +162,10 @@ int main()
 		CloseHandle(threadHandles[i]);
 	}
 
+	std::cout << "All threads completed. Program finished." << std::endl;
+
+	DeleteCriticalSection(&consoleCS);
 	DeleteCriticalSection(&arrayCS);
 
-	std::cout << "All threads completed. Program finished." << std::endl;
 	return 0;
 }
