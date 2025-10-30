@@ -23,6 +23,7 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 		int i = randomValue % arraySize;
 
 		EnterCriticalSection(&arrayCS);
+		EnterCriticalSection(&consoleCS);
 		if (array[i] == 0) {
 			Sleep(5);
 
@@ -52,6 +53,7 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 
 			if (result == WAIT_OBJECT_0 + 1) {
 				EnterCriticalSection(&arrayCS);
+				EnterCriticalSection(&consoleCS);
 
 				for (int i = 0; i < arraySize; i++) {
 					if (array[i] == number) {
@@ -61,9 +63,9 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 				}
 
 				LeaveCriticalSection(&arrayCS);
+				LeaveCriticalSection(&consoleCS);
 
 				std::cout << "Thread " << number << " terminated.\n";
-				LeaveCriticalSection(&consoleCS);
 				threadTerminated[number - 1] = true;
 				return 0;
 			}
@@ -89,8 +91,7 @@ int main()
 	}
 
 	std::cout << "Enter the number of marker threads:\n";
-	inputNatural(count, 64);
-
+	inputNatural(count, MAXIMUM_WAIT_OBJECTS);
 
 	InitializeCriticalSection(&arrayCS);
 	InitializeCriticalSection(&consoleCS);
