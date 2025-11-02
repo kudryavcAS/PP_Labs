@@ -1,10 +1,13 @@
-Ivanov Petr, 2, I-2
+Bernyak Nikita, 2, PM-6
 1
 Mathematics - 9
 Physics - 10
 Programming - 9
 History - 1
 Physical Education - 1
+2
+Mathematics - 10
+Programming - 9
 
 Sidorov Alexey, 2, KB-8
 1

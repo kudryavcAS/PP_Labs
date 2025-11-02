@@ -2,13 +2,16 @@ EXCELLENT STUDENTS
 (all grades >= 9)
 ==================
 
-Ivanov Petr, course: 2, group: I-2
+Bernyak Nikita, course: 2, group: PM-6
 Session 1:
   Mathematics - 9
   Physics - 10
   Programming - 9
   History - passed
   Physical Education - passed
+Session 2:
+  Mathematics - 10
+  Programming - 9
 
 
 Petrova Maria, course: 1, group: PI-11
