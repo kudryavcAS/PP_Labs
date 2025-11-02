@@ -1,0 +1,23 @@
+EXCELLENT STUDENTS
+(all grades >= 9)
+==================
+
+Ivanov Petr, course: 2, group: I-2
+Session 1:
+  Mathematics - 9
+  Physics - 10
+  Programming - 9
+  History - passed
+  Physical Education - passed
+
+
+Petrova Maria, course: 1, group: PI-11
+Session 1:
+  Mathematics - 10
+  Physics - 9
+  Programming - 10
+  History - passed
+  Physical Education - passed
+
+
+Total excellent students: 2
