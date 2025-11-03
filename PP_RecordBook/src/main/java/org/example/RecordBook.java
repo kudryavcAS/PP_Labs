@@ -17,7 +17,7 @@ public class RecordBook {
         this.sessions = new ArrayList<>();
     }
 
-    public class Session {
+    public static class Session {
         private final int sessionNumber;
         private final List<Subject> subjects;
 
@@ -38,7 +38,7 @@ public class RecordBook {
             return sessionNumber;
         }
 
-        public class Subject {
+        public static class Subject {
             private final String name;
             private final int grade;
             private final boolean isExam;

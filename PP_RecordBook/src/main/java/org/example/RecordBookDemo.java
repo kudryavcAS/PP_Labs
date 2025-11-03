@@ -1,94 +1,101 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.util.*;
 
 public class RecordBookDemo {
 
     public static void main(String[] args) {
-        List<RecordBook> recordBooks = readFromFile("input.txt");
+        List<RecordBook> recordBooks = readFromJsonFile("input.json");
 
+        writeExcellentStudentsToJson(recordBooks, "output.json");
         writeExcellentStudents(recordBooks, "output.txt");
     }
 
-    public static List<RecordBook> readFromFile(String filename) {
+    public static List<RecordBook> readFromJsonFile(String filename) {
         List<RecordBook> recordBooks = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            RecordBook currentRecordBook = null;
-            RecordBook.Session currentSession = null;
+        try (FileReader reader = new FileReader(filename)) {
+            Gson gson = new Gson();
 
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) {
-                    if (currentRecordBook != null) {
-                        recordBooks.add(currentRecordBook);
-                        currentRecordBook = null;
-                    }
-                    continue;
-                }
+            JsonStudent[] jsonStudents = gson.fromJson(reader, JsonStudent[].class);
 
-                if (line.matches("[1-9]")) {
-                    int sessionNumber = Integer.parseInt(line);
-                    if (currentRecordBook != null) {
-                        currentSession = currentRecordBook.addSession(sessionNumber);
-                    }
-                    continue;
-                }
+            for (JsonStudent jsonStudent : jsonStudents) {
+                RecordBook recordBook = new RecordBook(
+                        jsonStudent.lastName,
+                        jsonStudent.firstName,
+                        jsonStudent.course,
+                        jsonStudent.group
+                );
 
-                String[] studentData = line.split(",");
-                if (studentData.length >= 3) {
-                    String[] nameParts = studentData[0].trim().split(" ");
-                    if (nameParts.length >= 2) {
-                        String lastName = nameParts[0];
-                        String firstName = nameParts[1];
+                for (JsonSession jsonSession : jsonStudent.sessions) {
+                    RecordBook.Session session = recordBook.addSession(jsonSession.sessionNumber);
 
-                        int course;
-                        try {
-                            course = Integer.parseInt(studentData[1].trim());
-                        } catch (NumberFormatException e) {
-                            course = 0;
-                        }
-
-                        String group = studentData[2].trim();
-
-                        currentRecordBook = new RecordBook(lastName, firstName, course, group);
-                    }
-                    continue;
-                }
-
-                if (line.contains("-")) {
-                    String[] subjectData = line.split("-");
-                    if (subjectData.length == 2) {
-                        String subjectName = subjectData[0].trim();
-                        String gradeStr = subjectData[1].trim();
-
-                        try {
-                            int grade = Integer.parseInt(gradeStr);
-                            boolean isExam = grade >= 2;
-
-                            if (currentSession != null) {
-                                currentSession.addSubject(subjectName, grade, isExam);
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Grade format error: " + gradeStr);
-                        }
+                    for (JsonSubject jsonSubject : jsonSession.subjects) {
+                        session.addSubject(
+                                jsonSubject.name,
+                                jsonSubject.grade,
+                                jsonSubject.isExam
+                        );
                     }
                 }
-            }
 
-            if (currentRecordBook != null) {
-                recordBooks.add(currentRecordBook);
+                recordBooks.add(recordBook);
             }
 
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Data format error: " + e.getMessage());
+            System.out.println("Error reading JSON file: " + e.getMessage());
         }
 
         return recordBooks;
+    }
+
+    public static void writeExcellentStudentsToJson(List<RecordBook> recordBooks, String filename) {
+        List<JsonStudent> excellentStudents = new ArrayList<>();
+
+        for (RecordBook student : recordBooks) {
+            if (student.isExcellently()) {
+                excellentStudents.add(convertToJsonStudent(student));
+            }
+        }
+
+        try (FileWriter writer = new FileWriter(filename)) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(excellentStudents, writer);
+            System.out.println("Excellent students written to: " + filename);
+
+        } catch (IOException e) {
+            System.out.println("Error writing JSON file: " + e.getMessage());
+        }
+    }
+
+    private static JsonStudent convertToJsonStudent(RecordBook recordBook) {
+        JsonStudent jsonStudent = new JsonStudent();
+        jsonStudent.lastName = recordBook.getStudentLastName();
+        jsonStudent.firstName = recordBook.getStudentFirstName();
+        jsonStudent.course = recordBook.getCourse();
+        jsonStudent.group = recordBook.getGroup();
+        jsonStudent.sessions = new ArrayList<>();
+
+        for (RecordBook.Session session : recordBook.getSessions()) {
+            JsonSession jsonSession = new JsonSession();
+            jsonSession.sessionNumber = session.getSessionNumber();
+            jsonSession.subjects = new ArrayList<>();
+
+            for (RecordBook.Session.Subject subject : session.getSubjects()) {
+                JsonSubject jsonSubject = new JsonSubject();
+                jsonSubject.name = subject.getName();
+                jsonSubject.grade = subject.getGrade();
+                jsonSubject.isExam = subject.isExam();
+                jsonSession.subjects.add(jsonSubject);
+            }
+
+            jsonStudent.sessions.add(jsonSession);
+        }
+
+        return jsonStudent;
     }
 
     public static void writeExcellentStudents(List<RecordBook> recordBooks, String filename) {
@@ -115,5 +122,24 @@ public class RecordBookDemo {
         } catch (IOException e) {
             System.out.println("Error writing file: " + e.getMessage());
         }
+    }
+
+    static class JsonStudent {
+        String lastName;
+        String firstName;
+        int course;
+        String group;
+        List<JsonSession> sessions;
+    }
+
+    static class JsonSession {
+        int sessionNumber;
+        List<JsonSubject> subjects;
+    }
+
+    static class JsonSubject {
+        String name;
+        int grade;
+        boolean isExam;
     }
 }

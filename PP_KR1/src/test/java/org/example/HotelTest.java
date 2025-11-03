@@ -72,9 +72,9 @@ class HotelTest {
         Hotel hotel3 = new Hotel("Минск", "Marriott", 5);
         Hotel hotel4 = new Hotel("Минск", "Hilton", 4);
 
-        assertFalse(hotel1.equals(hotel2));
-        assertFalse(hotel1.equals(hotel3));
-        assertFalse(hotel1.equals(hotel4));
+        assertNotEquals(hotel1, hotel2);
+        assertNotEquals(hotel1, hotel3);
+        assertNotEquals(hotel1, hotel4);
     }
 
     @Test
@@ -84,8 +84,8 @@ class HotelTest {
     void testHotelEqualityWithNullAndDifferentClass() {
         Hotel hotel = new Hotel("Минск", "Hilton", 5);
 
-        assertFalse(hotel.equals(null));
-        assertFalse(hotel.equals("Минск Hilton 5"));
+        assertNotEquals(null, hotel);
+        assertNotEquals("Минск Hilton 5", hotel);
     }
 
     @Test
