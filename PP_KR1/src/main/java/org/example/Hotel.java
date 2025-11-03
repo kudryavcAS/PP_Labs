@@ -20,7 +20,7 @@ public class Hotel {
             this.name = parts[1];
             this.stars = Integer.parseInt(parts[2]);
         } else {
-            throw new IllegalArgumentException("Неверный формат строки: " + fileLine);
+            throw new IllegalArgumentException("Invalid string format: " + fileLine);
         }
     }
 

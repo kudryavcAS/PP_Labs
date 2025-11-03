@@ -47,7 +47,7 @@ class HotelTest {
                 () -> new Hotel(invalidLine)
         );
 
-        assertTrue(exception.getMessage().contains("Неверный формат строки"));
+        assertTrue(exception.getMessage().contains("Invalid string format"));
     }
 
     @Test
