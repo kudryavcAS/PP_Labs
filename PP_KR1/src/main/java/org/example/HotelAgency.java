@@ -44,29 +44,58 @@ public class HotelAgency {
 
     public void displayByCity(String cityName) {
         System.out.println("Hotels in " + cityName + ":");
-        boolean found = false;
+
+        List<Hotel> cityHotels = new ArrayList<>();
         for (Hotel hotel : hotels) {
             if (hotel.getCity().equalsIgnoreCase(cityName)) {
-                System.out.println(hotel.getName() + " - " + hotel.getStars() + " stars");
-                found = true;
+                cityHotels.add(hotel);
             }
         }
-        if (!found) {
+
+        if (cityHotels.isEmpty()) {
             System.out.println("No hotels found");
+            return;
+        }
+
+        cityHotels.sort((h1, h2) -> {
+            int nameCompare = h1.getName().compareTo(h2.getName());
+            if (nameCompare != 0) {
+                return nameCompare;
+            }
+            return Integer.compare(h2.getStars(), h1.getStars());
+        });
+
+        for (Hotel hotel : cityHotels) {
+            System.out.printf("  %s - %d stars\n", hotel.getName(), hotel.getStars());
         }
     }
 
+
     public void displayByName(String hotelName) {
         System.out.println("Cities with " + hotelName + ":");
-        boolean found = false;
+
+        List<Hotel> nameHotels = new ArrayList<>();
         for (Hotel hotel : hotels) {
             if (hotel.getName().equalsIgnoreCase(hotelName)) {
-                System.out.println(hotel.getCity());
-                found = true;
+                nameHotels.add(hotel);
             }
         }
-        if (!found) {
+
+        if (nameHotels.isEmpty()) {
             System.out.println("No cities found");
+            return;
+        }
+
+        nameHotels.sort((h1, h2) -> {
+            int cityCompare = h1.getCity().compareTo(h2.getCity());
+            if (cityCompare != 0) {
+                return cityCompare;
+            }
+            return Integer.compare(h2.getStars(), h1.getStars());
+        });
+
+        for (Hotel hotel : nameHotels) {
+            System.out.printf("  %s - %d stars\n", hotel.getCity(), hotel.getStars());
         }
     }
 
