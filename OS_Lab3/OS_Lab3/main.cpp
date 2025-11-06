@@ -31,6 +31,7 @@ DWORD WINAPI markerThread(LPVOID lpParam) {
 			markedCount++;
 
 			LeaveCriticalSection(&arrayCS);
+			LeaveCriticalSection(&consoleCS);
 
 			Sleep(5);
 		}
