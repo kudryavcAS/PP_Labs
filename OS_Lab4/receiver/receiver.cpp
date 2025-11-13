@@ -1,4 +1,6 @@
-﻿#include "receiver.h"
+﻿//C++98
+
+#include "receiver.h"
 
 void inputNatural(int& integer, int max) {
 	while (true) {
@@ -34,8 +36,6 @@ bool startProcess(const std::string& processPath, const std::string& arguments, 
 		commandLine = "cmd.exe /c start \"" + windowTitle + "\" \"" + processPath + "\" " + arguments;
 	}
 
-	std::cout << "Starting: " << commandLine << std::endl;
-
 	if (!CreateProcess(NULL, (LPSTR)commandLine.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startupInfo, &processInfo)) {
 		std::cout << "Failed to start process. Error: " << GetLastError() << std::endl;
 		return false;
@@ -50,7 +50,6 @@ std::string findSenderPath() {
 }
 
 bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData*& sharedData, HANDLE& hMapFile) {
-	// Создание файла отображения в память
 	hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
 		NULL,
@@ -61,11 +60,10 @@ bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData
 	);
 
 	if (hMapFile == NULL) {
-		std::cout << "Receiver: Could not create file mapping" << std::endl;
+		std::cout << "Could not create file mapping" << std::endl;
 		return false;
 	}
 
-	// Получение указателя на разделяемую память
 	sharedData = (SharedData*)MapViewOfFile(
 		hMapFile,
 		FILE_MAP_ALL_ACCESS,
@@ -75,12 +73,11 @@ bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData
 	);
 
 	if (sharedData == NULL) {
-		std::cout << "Receiver: Could not map view of file" << std::endl;
+		std::cout << "Could not map view of file" << std::endl;
 		CloseHandle(hMapFile);
 		return false;
 	}
 
-	// Инициализация разделяемых данных
 	sharedData->readIndex = 0;
 	sharedData->writeIndex = 0;
 	sharedData->messageCount = 0;
@@ -91,27 +88,25 @@ bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData
 
 bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
 	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex) {
-	// Создание имен для объектов синхронизации
-	std::string emptySemName = "Global\\" + fileName + "_empty";
-	std::string fullSemName = "Global\\" + fileName + "_full";
-	std::string mutexName = "Global\\" + fileName + "_mutex";
 
-	std::cout << "Receiver: Creating synchronization objects..." << std::endl;
+	std::string emptySemName = fileName + "_empty";
+	std::string fullSemName = fileName + "_full";
+	std::string mutexName = fileName + "_mutex";
+
 	std::cout << "  Empty semaphore: " << emptySemName << std::endl;
 	std::cout << "  Full semaphore: " << fullSemName << std::endl;
 	std::cout << "  Mutex: " << mutexName << std::endl;
 
-	// Создание семафоров и мьютекса
 	emptySemaphore = CreateSemaphore(NULL, maxMessages, maxMessages, emptySemName.c_str());
 	fullSemaphore = CreateSemaphore(NULL, 0, maxMessages, fullSemName.c_str());
 	mutex = CreateMutex(NULL, FALSE, mutexName.c_str());
 
 	if (emptySemaphore == NULL || fullSemaphore == NULL || mutex == NULL) {
-		std::cout << "Receiver: Could not create synchronization objects" << std::endl;
+		std::cout << "Error: Could not create synchronization objects\n";
 		return false;
 	}
 
-	std::cout << "Receiver: Synchronization objects created successfully!" << std::endl;
+	std::cout << "Synchronization objects created successfully\n";
 	return true;
 }
 
@@ -130,23 +125,21 @@ bool startSenderProcesses(int senderCount, const std::string& senderPath, const 
 void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex) {
 	bool running = true;
 	while (running) {
-		std::cout << "\n=== RECEIVER ===" << std::endl;
-		std::cout << "Messages in buffer: " << sharedData->messageCount << "/" << maxMessages << std::endl;
-		std::cout << "Commands: 1 - Read message, 2 - Exit" << std::endl;
+		std::cout << "\nRECEIVER:\n";
+		std::cout << "Messages in buffer: " << sharedData->messageCount << "/" << maxMessages << "\n";
+		std::cout << "Commands:\n1 - Read message\n2 - Exit\n";
 		std::cout << "Enter choice: ";
 
 		int choice;
-		std::cin >> choice;
+		inputNatural(choice, 2);
 
 		switch (choice) {
 		case 1: {
-			std::cout << "Receiver: Waiting for message..." << std::endl;
+			std::cout << "Waiting for message...";
 
-			// Ожидаем сообщение
 			if (WaitForSingleObject(fullSemaphore, INFINITE) == WAIT_OBJECT_0) {
 				WaitForSingleObject(mutex, INFINITE);
 
-				// Читаем сообщение из буфера
 				Message msg = sharedData->messages[sharedData->readIndex];
 				sharedData->readIndex = (sharedData->readIndex + 1) % maxMessages;
 				sharedData->messageCount--;
@@ -154,7 +147,7 @@ void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore
 				ReleaseMutex(mutex);
 				ReleaseSemaphore(emptySemaphore, 1, NULL);
 
-				std::cout << "Receiver: Received message: '" << msg.content << "'" << std::endl;
+				std::cout << "Received message: '" << msg.content << "'" << std::endl;
 			}
 			break;
 		}
@@ -162,7 +155,7 @@ void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore
 			running = false;
 			break;
 		default:
-			std::cout << "Receiver: Invalid choice" << std::endl;
+			std::cout << "Receiver: Invalid choice\n";
 			break;
 		}
 	}
@@ -188,38 +181,32 @@ int main() {
 	int maxMessages;
 	int senderCount;
 
-	// Указатели на ресурсы (для корректного освобождения)
 	SharedData* sharedData = NULL;
 	HANDLE hMapFile = NULL;
 	HANDLE emptySemaphore = NULL;
 	HANDLE fullSemaphore = NULL;
 	HANDLE mutex = NULL;
 
-	// Ввод параметров
-	std::cout << "Receiver: Enter binary file name: ";
+	std::cout << "Enter binary file name: ";
 	std::cin >> fileName;
-	std::cout << "Receiver: Enter max number of messages: ";
+	std::cout << "Enter max number of messages: ";
 	inputNatural(maxMessages, MAX_MESSAGES);
 
-	// Создание разделяемой памяти
 	if (!createSharedMemory(fileName, maxMessages, sharedData, hMapFile)) {
 		return 1;
 	}
 
-	// Создание объектов синхронизации
 	if (!createSynchronizationObjects(fileName, maxMessages, emptySemaphore, fullSemaphore, mutex)) {
 		cleanupResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 		return 1;
 	}
 
-	// Ввод количества процессов Sender
-	std::cout << "Receiver: Enter number of Sender processes: ";
+	std::cout << "Enter number of Sender processes: ";
 	inputNatural(senderCount);
 
-	// Поиск и запуск Sender процессов
 	std::string senderPath = findSenderPath();
 	if (senderPath.empty()) {
-		std::cout << "Receiver: Sender.exe not found!" << std::endl;
+		std::cout << "Sender.exe not found!\n";
 		cleanupResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 		return 1;
 	}
@@ -229,19 +216,15 @@ int main() {
 		return 1;
 	}
 
-	// Ожидание готовности Sender процессов
-	std::cout << "Receiver: Waiting for all Senders to be ready..." << std::endl;
+	std::cout << "Waiting for all Senders to be ready...\n";
 	Sleep(5000);
 
-	// Основной цикл Receiver
 	receiverLoop(sharedData, maxMessages, emptySemaphore, fullSemaphore, mutex);
 
-	// Завершение работы
-	std::cout << "Receiver: Shutting down..." << std::endl;
-	std::cout << "Receiver: Please close Sender windows manually" << std::endl;
+	std::cout << "Receiver: Please close Sender windows manually\n";
 
 	cleanupResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 
-	std::cout << "Receiver: Finished" << std::endl;
+	std::cout << "Receiver: Finished\n";
 	return 0;
 }

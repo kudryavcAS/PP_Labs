@@ -5,21 +5,35 @@
 #include <string>
 #include <cstring>
 
-const int MAX_MESSAGE_LENGTH = 20;  // Максимальная длина сообщения
-const int MAX_MESSAGES = 100;       // Максимальный размер буфера
+const int MAX_MESSAGE_LENGTH = 20;
+const int MAX_MESSAGES = 100;
 
-// Структура для хранения одного сообщения
+void inputNatural(int& integer, int max) {
+	while (true) {
+		std::cin >> integer;
+
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(INT_MAX, '\n');
+			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
+			continue;
+		}
+		if (integer <= 0 || integer > max) {
+			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
+			continue;
+		}
+		break;
+	}
+}
+
 struct Message {
-	char content[MAX_MESSAGE_LENGTH + 1];  // Текст сообщения + нулевой символ
+	char content[MAX_MESSAGE_LENGTH + 1];
 };
 
-// Структура разделяемых данных между процессами (должна совпадать с Receiver)
 struct SharedData {
-	Message messages[MAX_MESSAGES];  // Кольцевой буфер сообщений
-	int readIndex;                   // Индекс для чтения (позиция Receiver)
-	int writeIndex;                  // Индекс для записи (позиция Sender)
-	int messageCount;                // Текущее количество сообщений в буфере
-	int maxMessages;                 // Максимальная емкость буфера
-	// Примечание: HANDLE'ы семафоров и мьютекса хранятся здесь для единообразия,
-	// но в Windows они должны быть именованными для доступа из разных процессов
+	Message messages[MAX_MESSAGES];
+	int readIndex;
+	int writeIndex;
+	int messageCount;
+	int maxMessages;
 };
