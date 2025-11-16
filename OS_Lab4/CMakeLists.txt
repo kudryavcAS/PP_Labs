@@ -14,3 +14,4 @@ project ("OS_Lab4")
 # Включите подпроекты.
 add_subdirectory ("receiver")
 add_subdirectory ("sender")
+add_subdirectory ("tests")

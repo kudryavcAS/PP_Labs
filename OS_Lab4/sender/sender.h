@@ -4,23 +4,8 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include "receiver.h"
 
-const int MAX_MESSAGE_LENGTH = 20;
-const int MAX_MESSAGES = 100;
-
-struct Message {
-	char content[MAX_MESSAGE_LENGTH + 1];
-};
-
-struct SharedData {
-	Message messages[MAX_MESSAGES];
-	int readIndex;
-	int writeIndex;
-	int messageCount;
-	int maxMessages;
-};
-
-void inputNatural(int& integer, int max = INT_MAX);
 bool openSharedMemory(const std::string& fileName, SharedData*& sharedData, HANDLE& hMapFile);
 bool openSynchronizationObjects(const std::string& fileName,
 	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex);

@@ -13,6 +13,7 @@ if(WIN32)
     target_link_libraries(sender ${SYSTEM_LIBS})
 endif()
 
+target_include_directories(sender PRIVATE ../receiver)
 # Устанавливаем выходной каталог для ВСЕХ исполняемых файлов
 set_target_properties(sender PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
