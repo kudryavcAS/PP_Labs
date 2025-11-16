@@ -3,7 +3,7 @@
 #
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (sender "sender.cpp" "sender.h")
+add_executable (sender "sender.cpp" "sender.h" "sender_func.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET sender PROPERTY CXX_STANDARD 98)

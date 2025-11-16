@@ -23,5 +23,20 @@ struct SharedData {
 };
 
 void inputNatural(int& integer, int max = INT_MAX);
-bool startProcess(const std::string& processPath, const std::string& arguments, const std::string& windowTitle = "");
+bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData*& sharedData, HANDLE& hMapFile);
+
+void cleanupResources(HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex,
+	SharedData* sharedData, HANDLE hMapFile);
+
+bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
+	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex);
+
+std::string findSenderPath();
+
+bool startSenderProcesses(int senderCount, const std::string& senderPath, const std::string& fileName);
+
+bool startProcess(const std::string& processPath, const std::string& arguments, const std::string& windowTitle);
+
+void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex);
+
 #endif
