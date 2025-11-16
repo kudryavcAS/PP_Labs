@@ -20,6 +20,98 @@ void inputNatural(int& integer, int max) {
 	}
 }
 
+bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData*& sharedData, HANDLE& hMapFile) {
+	hMapFile = CreateFileMapping(
+		INVALID_HANDLE_VALUE,
+		NULL,
+		PAGE_READWRITE,
+		0,
+		sizeof(SharedData),
+		fileName.c_str()
+	);
+
+	if (hMapFile == NULL) {
+		std::cout << "Could not create file mapping" << "\n";
+		return false;
+	}
+
+	sharedData = (SharedData*)MapViewOfFile(
+		hMapFile,
+		FILE_MAP_ALL_ACCESS,
+		0,
+		0,
+		sizeof(SharedData)
+	);
+
+	if (sharedData == NULL) {
+		std::cout << "Could not map view of file\n";
+		CloseHandle(hMapFile);
+		return false;
+	}
+
+	sharedData->readIndex = 0;
+	sharedData->writeIndex = 0;
+	sharedData->messageCount = 0;
+	sharedData->maxMessages = maxMessages;
+
+	return true;
+}
+
+void cleanupResources(HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex,
+	SharedData* sharedData, HANDLE hMapFile) {
+	CloseHandle(emptySemaphore);
+	CloseHandle(fullSemaphore);
+	CloseHandle(mutex);
+
+	if (sharedData != NULL) {
+		UnmapViewOfFile(sharedData);
+	}
+
+	if (hMapFile != NULL) {
+		CloseHandle(hMapFile);
+	}
+}
+
+bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
+	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex) {
+
+	std::string emptySemName = fileName + "_empty";
+	std::string fullSemName = fileName + "_full";
+	std::string mutexName = fileName + "_mutex";
+
+	std::cout << "  Empty semaphore: " << emptySemName << "\n";
+	std::cout << "  Full semaphore: " << fullSemName << "\n";
+	std::cout << "  Mutex: " << mutexName << "\n";
+
+	emptySemaphore = CreateSemaphore(NULL, maxMessages, maxMessages, emptySemName.c_str());
+	fullSemaphore = CreateSemaphore(NULL, 0, maxMessages, fullSemName.c_str());
+	mutex = CreateMutex(NULL, FALSE, mutexName.c_str());
+
+	if (emptySemaphore == NULL || fullSemaphore == NULL || mutex == NULL) {
+		std::cout << "Error: Could not create synchronization objects\n";
+		return false;
+	}
+
+	std::cout << "Synchronization objects created successfully\n";
+	return true;
+}
+
+std::string findSenderPath() {
+	return "Sender.exe";
+}
+
+bool startSenderProcesses(int senderCount, const std::string& senderPath, const std::string& fileName) {
+	for (int i = 0; i < senderCount; i++) {
+		std::string windowTitle = "Sender " + std::to_string(i + 1);
+		if (!startProcess(senderPath, fileName, windowTitle)) {
+			std::cout << "Receiver: Failed to start Sender process " << i + 1 << "\n";
+			return false;
+		}
+		std::cout << "Receiver: Started Sender process " << i + 1 << "\n";
+	}
+	return true;
+}
+
 bool startProcess(const std::string& processPath, const std::string& arguments, const std::string& windowTitle) {
 	STARTUPINFO startupInfo;
 	PROCESS_INFORMATION processInfo;
@@ -37,88 +129,12 @@ bool startProcess(const std::string& processPath, const std::string& arguments, 
 	}
 
 	if (!CreateProcess(NULL, (LPSTR)commandLine.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startupInfo, &processInfo)) {
-		std::cout << "Failed to start process. Error: " << GetLastError() << std::endl;
+		std::cout << "Failed to start process. Error: " << GetLastError() << "\n";
 		return false;
 	}
+
 	CloseHandle(processInfo.hProcess);
 	CloseHandle(processInfo.hThread);
-	return true;
-}
-
-std::string findSenderPath() {
-	return "Sender.exe";
-}
-
-bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData*& sharedData, HANDLE& hMapFile) {
-	hMapFile = CreateFileMapping(
-		INVALID_HANDLE_VALUE,
-		NULL,
-		PAGE_READWRITE,
-		0,
-		sizeof(SharedData),
-		fileName.c_str()
-	);
-
-	if (hMapFile == NULL) {
-		std::cout << "Could not create file mapping" << std::endl;
-		return false;
-	}
-
-	sharedData = (SharedData*)MapViewOfFile(
-		hMapFile,
-		FILE_MAP_ALL_ACCESS,
-		0,
-		0,
-		sizeof(SharedData)
-	);
-
-	if (sharedData == NULL) {
-		std::cout << "Could not map view of file" << std::endl;
-		CloseHandle(hMapFile);
-		return false;
-	}
-
-	sharedData->readIndex = 0;
-	sharedData->writeIndex = 0;
-	sharedData->messageCount = 0;
-	sharedData->maxMessages = maxMessages;
-
-	return true;
-}
-
-bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
-	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex) {
-
-	std::string emptySemName = fileName + "_empty";
-	std::string fullSemName = fileName + "_full";
-	std::string mutexName = fileName + "_mutex";
-
-	std::cout << "  Empty semaphore: " << emptySemName << std::endl;
-	std::cout << "  Full semaphore: " << fullSemName << std::endl;
-	std::cout << "  Mutex: " << mutexName << std::endl;
-
-	emptySemaphore = CreateSemaphore(NULL, maxMessages, maxMessages, emptySemName.c_str());
-	fullSemaphore = CreateSemaphore(NULL, 0, maxMessages, fullSemName.c_str());
-	mutex = CreateMutex(NULL, FALSE, mutexName.c_str());
-
-	if (emptySemaphore == NULL || fullSemaphore == NULL || mutex == NULL) {
-		std::cout << "Error: Could not create synchronization objects\n";
-		return false;
-	}
-
-	std::cout << "Synchronization objects created successfully\n";
-	return true;
-}
-
-bool startSenderProcesses(int senderCount, const std::string& senderPath, const std::string& fileName) {
-	for (int i = 0; i < senderCount; i++) {
-		std::string windowTitle = "Sender " + std::to_string(i + 1);
-		if (!startProcess(senderPath, fileName, windowTitle)) {
-			std::cout << "Receiver: Failed to start Sender process " << i + 1 << std::endl;
-			return false;
-		}
-		std::cout << "Receiver: Started Sender process " << i + 1 << std::endl;
-	}
 	return true;
 }
 
@@ -126,7 +142,6 @@ void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore
 	bool running = true;
 	while (running) {
 		std::cout << "\nRECEIVER:\n";
-		std::cout << "Messages in buffer: " << sharedData->messageCount << "/" << maxMessages << "\n";
 		std::cout << "Commands:\n1 - Read message\n2 - Exit\n";
 		std::cout << "Enter choice: ";
 
@@ -135,7 +150,8 @@ void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore
 
 		switch (choice) {
 		case 1: {
-			std::cout << "Waiting for message...";
+			std::cout << "Messages in buffer: " << sharedData->messageCount << "/" << maxMessages << "\n";
+			if (!sharedData->messageCount) std::cout << "Waiting for message...";
 
 			if (WaitForSingleObject(fullSemaphore, INFINITE) == WAIT_OBJECT_0) {
 				WaitForSingleObject(mutex, INFINITE);
@@ -147,7 +163,7 @@ void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore
 				ReleaseMutex(mutex);
 				ReleaseSemaphore(emptySemaphore, 1, NULL);
 
-				std::cout << "Received message: '" << msg.content << "'" << std::endl;
+				std::cout << "Received message: '" << msg.content << "'" << "\n";
 			}
 			break;
 		}
