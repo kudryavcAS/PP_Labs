@@ -1,7 +1,7 @@
 #include "sender.h"
 
-bool openSharedMemory(const std::string& fileName, SharedData*& sharedData, HANDLE& hMapFile) {
-	hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, fileName.c_str());
+bool openSharedMemory(const std::string& memoryName, SharedData*& sharedData, HANDLE& hMapFile) {
+	hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, memoryName.c_str());
 	if (hMapFile == NULL) {
 		std::cout << "Could not open file mapping. Error: " << GetLastError() << "\n";
 		std::cout << "Make sure Receiver is running first!" << "\n";
@@ -18,16 +18,11 @@ bool openSharedMemory(const std::string& fileName, SharedData*& sharedData, HAND
 	return true;
 }
 
-bool openSynchronizationObjects(const std::string& fileName,
+bool openSynchronizationObjects(const std::string& memoryName,
 	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex) {
-	std::string emptySemName = fileName + "_empty";
-	std::string fullSemName = fileName + "_full";
-	std::string mutexName = fileName + "_mutex";
-
-	std::cout << "Looking for synchronization objects..." << "\n";
-	std::cout << "  Empty semaphore: " << emptySemName << "\n";
-	std::cout << "  Full semaphore: " << fullSemName << "\n";
-	std::cout << "  Mutex: " << mutexName << "\n";
+	std::string emptySemName = memoryName + "_empty";
+	std::string fullSemName = memoryName + "_full";
+	std::string mutexName = memoryName + "_mutex";
 
 	emptySemaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, emptySemName.c_str());
 	fullSemaphore = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, fullSemName.c_str());
@@ -38,7 +33,6 @@ bool openSynchronizationObjects(const std::string& fileName,
 		return false;
 	}
 
-	std::cout << "Successfully opened all synchronization objects!" << "\n";
 	return true;
 }
 
@@ -99,7 +93,7 @@ bool sendMessage(SharedData* sharedData, HANDLE emptySemaphore, HANDLE fullSemap
 void senderLoop(SharedData* sharedData, HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex) {
 	bool running = true;
 	while (running) {
-		std::cout << "\n=== SENDER ===" << "\n";
+		std::cout << "\nSENDER:\n";
 		std::cout << "Commands:\n1 - Send message\n2 - Exit" << "\n";
 		std::cout << "Enter choice: ";
 

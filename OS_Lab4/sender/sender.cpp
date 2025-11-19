@@ -2,14 +2,13 @@
 
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
-		std::cout << "File name not provided" << "\n";
-		std::cout << "Usage: Sender.exe <filename>" << "\n";
+		std::cout << "Error: not enough arguments\n";
 		return 1;
 	}
 
-	std::string fileName = argv[1];
+	std::string memoryName = argv[1];
 	std::cout << "SENDER:\n" << "\n";
-	std::cout << "Ready to work with file: " << fileName << "\n";
+	std::cout << "Ready to work with file: " << memoryName << "\n";
 
 	SharedData* sharedData = NULL;
 	HANDLE hMapFile = NULL;
@@ -17,11 +16,11 @@ int main(int argc, char* argv[]) {
 	HANDLE fullSemaphore = NULL;
 	HANDLE mutex = NULL;
 
-	if (!openSharedMemory(fileName, sharedData, hMapFile)) {
+	if (!openSharedMemory(memoryName, sharedData, hMapFile)) {
 		return 1;
 	}
 
-	if (!openSynchronizationObjects(fileName, emptySemaphore, fullSemaphore, mutex)) {
+	if (!openSynchronizationObjects(memoryName, emptySemaphore, fullSemaphore, mutex)) {
 		cleanupSenderResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 		return 1;
 	}

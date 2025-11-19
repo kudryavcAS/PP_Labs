@@ -1,12 +1,7 @@
-# CMakeList.txt: проект CMake для OS_Lab4; включите исходный код и определения,
-# укажите здесь логику для конкретного проекта.
-#
-
-# Добавьте источник в исполняемый файл этого проекта.
 add_executable (sender "sender.cpp" "sender.h" "sender_func.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET sender PROPERTY CXX_STANDARD 98)
+    set_property(TARGET sender PROPERTY CXX_STANDARD 98)
 endif()
 
 if(WIN32)
@@ -14,8 +9,7 @@ if(WIN32)
 endif()
 
 target_include_directories(sender PRIVATE ../receiver)
-# Устанавливаем выходной каталог для ВСЕХ исполняемых файлов
+
 set_target_properties(sender PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-# TODO: Добавьте тесты и целевые объекты, если это необходимо.

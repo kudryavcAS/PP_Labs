@@ -1,7 +1,12 @@
 #include "receiver.h"
 
 int main() {
-	std::string fileName;
+
+#ifdef _WIN32
+	SetConsoleTitleA("Receiver");
+#endif
+
+	std::string memoryName;
 	int maxMessages;
 	int senderCount;
 
@@ -11,16 +16,16 @@ int main() {
 	HANDLE fullSemaphore = NULL;
 	HANDLE mutex = NULL;
 
-	std::cout << "Enter binary file name: ";
-	std::cin >> fileName;
+	std::cout << "Enter shared memory name: ";
+	std::cin >> memoryName;
 	std::cout << "Enter max number of messages: ";
 	inputNatural(maxMessages, MAX_MESSAGES);
 
-	if (!createSharedMemory(fileName, maxMessages, sharedData, hMapFile)) {
+	if (!createSharedMemory(memoryName, maxMessages, sharedData, hMapFile)) {
 		return 1;
 	}
 
-	if (!createSynchronizationObjects(fileName, maxMessages, emptySemaphore, fullSemaphore, mutex)) {
+	if (!createSynchronizationObjects(memoryName, maxMessages, emptySemaphore, fullSemaphore, mutex)) {
 		cleanupResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 		return 1;
 	}
@@ -35,7 +40,7 @@ int main() {
 		return 1;
 	}
 
-	if (!startSenderProcesses(senderCount, senderPath, fileName)) {
+	if (!startSenderProcesses(senderCount, senderPath, memoryName)) {
 		cleanupResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 		return 1;
 	}

@@ -22,7 +22,24 @@ struct SharedData {
 	int maxMessages;
 };
 
-void inputNatural(int& integer, int max = INT_MAX);
+
+inline void inputNatural(int& integer, int max = INT_MAX) {
+	while (true) {
+		std::cin >> integer;
+
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(INT_MAX, '\n');
+			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
+			continue;
+		}
+		if (integer <= 0 || integer > max) {
+			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
+			continue;
+		}
+		break;
+	}
+}
 bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData*& sharedData, HANDLE& hMapFile);
 
 void cleanupResources(HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex,
@@ -39,4 +56,6 @@ bool startProcess(const std::string& processPath, const std::string& arguments, 
 
 void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex);
 
+bool readMessage(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore,
+	HANDLE fullSemaphore, HANDLE mutex, Message& receivedMessage);
 #endif

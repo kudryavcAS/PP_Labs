@@ -2,24 +2,6 @@
 
 #include "receiver.h"
 
-void inputNatural(int& integer, int max) {
-	while (true) {
-		std::cin >> integer;
-
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(INT_MAX, '\n');
-			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
-			continue;
-		}
-		if (integer <= 0 || integer > max) {
-			std::cout << "Invalid input. Enter an integer 0 < " << max << "\n";
-			continue;
-		}
-		break;
-	}
-}
-
 bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData*& sharedData, HANDLE& hMapFile) {
 	hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,
@@ -79,10 +61,6 @@ bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
 	std::string fullSemName = fileName + "_full";
 	std::string mutexName = fileName + "_mutex";
 
-	std::cout << "  Empty semaphore: " << emptySemName<<"\n";
-	std::cout << "  Full semaphore: " << fullSemName << "\n";
-	std::cout << "  Mutex: " << mutexName << "\n";
-
 	emptySemaphore = CreateSemaphore(NULL, maxMessages, maxMessages, emptySemName.c_str());
 	fullSemaphore = CreateSemaphore(NULL, 0, maxMessages, fullSemName.c_str());
 	mutex = CreateMutex(NULL, FALSE, mutexName.c_str());
@@ -92,7 +70,6 @@ bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
 		return false;
 	}
 
-	std::cout << "Synchronization objects created successfully\n";
 	return true;
 }
 
@@ -100,10 +77,10 @@ std::string findSenderPath() {
 	return "Sender.exe";
 }
 
-bool startSenderProcesses(int senderCount, const std::string& senderPath, const std::string& fileName) {
+bool startSenderProcesses(int senderCount, const std::string& senderPath, const std::string& memoryName) {
 	for (int i = 0; i < senderCount; i++) {
 		std::string windowTitle = "Sender " + std::to_string(i + 1);
-		if (!startProcess(senderPath, fileName, windowTitle)) {
+		if (!startProcess(senderPath, memoryName, windowTitle)) {
 			std::cout << "Receiver: Failed to start Sender process " << i + 1 << "\n";
 			return false;
 		}
@@ -138,6 +115,43 @@ bool startProcess(const std::string& processPath, const std::string& arguments, 
 	return true;
 }
 
+bool readMessage(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore,
+	HANDLE fullSemaphore, HANDLE mutex, Message& receivedMessage) {
+
+	std::cout << "Messages in buffer: " << sharedData->messageCount << "/" << maxMessages << "\n";
+
+	if (!sharedData->messageCount) {
+		std::cout << "Buffer is empty! Waiting for message..." << "\n";
+	}
+
+	DWORD result = WaitForSingleObject(fullSemaphore, INFINITE);
+	if (result == WAIT_OBJECT_0) {
+		WaitForSingleObject(mutex, INFINITE);
+
+		if (sharedData->messageCount <= 0) {
+			std::cout << "Error: Buffer is still empty after wait\n";
+			ReleaseMutex(mutex);
+			ReleaseSemaphore(fullSemaphore, 1, NULL);
+			return false;
+		}
+
+		receivedMessage = sharedData->messages[sharedData->readIndex];
+
+		sharedData->readIndex = (sharedData->readIndex + 1) % maxMessages;
+		sharedData->messageCount--;
+
+		ReleaseMutex(mutex);
+
+		ReleaseSemaphore(emptySemaphore, 1, NULL);
+
+		return true;
+	}
+	else {
+		std::cout << "Error waiting for message. Error: " << GetLastError() << "\n";
+		return false;
+	}
+}
+
 void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore, HANDLE fullSemaphore, HANDLE mutex) {
 	bool running = true;
 	while (running) {
@@ -150,20 +164,12 @@ void receiverLoop(SharedData* sharedData, int maxMessages, HANDLE emptySemaphore
 
 		switch (choice) {
 		case 1: {
-			std::cout << "Messages in buffer: " << sharedData->messageCount << "/" << maxMessages << "\n";
-			if(!sharedData->messageCount) std::cout << "Waiting for message...\n";
-
-			if (WaitForSingleObject(fullSemaphore, INFINITE) == WAIT_OBJECT_0) {
-				WaitForSingleObject(mutex, INFINITE);
-
-				Message msg = sharedData->messages[sharedData->readIndex];
-				sharedData->readIndex = (sharedData->readIndex + 1) % maxMessages;
-				sharedData->messageCount--;
-
-				ReleaseMutex(mutex);
-				ReleaseSemaphore(emptySemaphore, 1, NULL);
-
-				std::cout << "Received message: '" << msg.content << "'" << "\n";
+			Message receivedMsg;
+			if (readMessage(sharedData, maxMessages, emptySemaphore, fullSemaphore, mutex, receivedMsg)) {
+				std::cout << "Received message: '" << receivedMsg.content << "'" << "\n";
+			}
+			else {
+				std::cout << "Failed to read message" << "\n";
 			}
 			break;
 		}
