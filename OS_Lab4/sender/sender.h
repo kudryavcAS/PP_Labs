@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SENDER_H
+#define SENDER_H
 
 #include <windows.h>
 #include <iostream>
@@ -37,3 +38,5 @@ struct SharedData {
 	int messageCount;
 	int maxMessages;
 };
+
+#endif

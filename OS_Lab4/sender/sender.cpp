@@ -8,12 +8,12 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::string fileName = argv[1];
-	std::cout << "=== SENDER ===" << std::endl;
-	std::cout << "Sender: Ready to work with file: " << fileName << std::endl;
+	std::cout << "SENDER\n";
+	std::cout << "Sender: Ready to work with file: " << fileName << "\n";
 
-	std::string emptySemName = fileName + "_empty";
-	std::string fullSemName = fileName + "_full";
-	std::string mutexName = fileName + "_mutex";
+	std::string emptySemName = "emptySem";
+	std::string fullSemName = "fullSem";
+	std::string mutexName = "mutex";
 
 	std::cout << "Sender: Looking for synchronization objects..." << std::endl;
 	std::cout << "  Empty semaphore: " << emptySemName << std::endl;
@@ -64,7 +64,6 @@ int main(int argc, char* argv[]) {
 	std::cout << "Sender: Successfully opened all synchronization objects!" << std::endl;
 	std::cout << "Sender: Maximum messages: " << sharedData->maxMessages << std::endl;
 
-	// Основной цикл Sender
 	bool running = true;
 	while (running) {
 		std::cout << "\n=== SENDER ===" << std::endl;

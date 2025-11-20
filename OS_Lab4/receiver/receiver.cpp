@@ -89,9 +89,9 @@ bool createSharedMemory(const std::string& fileName, int maxMessages, SharedData
 bool createSynchronizationObjects(const std::string& fileName, int maxMessages,
 	HANDLE& emptySemaphore, HANDLE& fullSemaphore, HANDLE& mutex) {
 
-	std::string emptySemName = fileName + "_empty";
-	std::string fullSemName = fileName + "_full";
-	std::string mutexName = fileName + "_mutex";
+	std::string emptySemName = "emptySem";
+	std::string fullSemName = fileName + "fullSem";
+	std::string mutexName = fileName + "mutex";
 
 	std::cout << "  Empty semaphore: " << emptySemName << std::endl;
 	std::cout << "  Full semaphore: " << fullSemName << std::endl;
@@ -225,6 +225,6 @@ int main() {
 
 	cleanupResources(emptySemaphore, fullSemaphore, mutex, sharedData, hMapFile);
 
-	std::cout << "Receiver: Finished\n";
+	std::cout <<"Finished\n";
 	return 0;
 }

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <climits>
 
 const int MAX_MESSAGE_LENGTH = 20;
 const int MAX_MESSAGES = 100;
@@ -24,4 +23,5 @@ struct SharedData {
 
 void inputNatural(int& integer, int max = INT_MAX);
 bool startProcess(const std::string& processPath, const std::string& arguments, const std::string& windowTitle = "");
+
 #endif
