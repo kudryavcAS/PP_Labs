@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TextAlignment {
+    private static final int DEFAULT_FIRST_LINE_INDENT = 4;
+    private static final int SINGLE_SPACE_LENGTH = 1;
+    private static final int MIN_LINE_LENGTH = 1;
+
     private final int maxLineLength;
     private final TextStream textStream;
 
@@ -13,8 +17,8 @@ public class TextAlignment {
     }
 
     public TextAlignment(int maxLineLength, TextStream textStream) {
-        if (maxLineLength <= 0) {
-            throw new IllegalArgumentException("Max line length must be positive");
+        if (maxLineLength < MIN_LINE_LENGTH) {
+            throw new IllegalArgumentException("Max line length must be at least " + MIN_LINE_LENGTH);
         }
         this.maxLineLength = maxLineLength;
         this.textStream = textStream;
@@ -78,15 +82,15 @@ public class TextAlignment {
         for (String word : words) {
             int wordLength = word.length();
 
-            int availableLength = maxLineLength - (firstLine ? 4 : 0);
+            int availableLength = maxLineLength - (firstLine ? DEFAULT_FIRST_LINE_INDENT : 0);
 
             if (currentLineWords.isEmpty()) {
                 currentLineWords.add(word);
                 currentLineLength = wordLength;
             } else {
-                if (currentLineLength + 1 + wordLength <= availableLength) {
+                if (currentLineLength + SINGLE_SPACE_LENGTH + wordLength <= availableLength) {
                     currentLineWords.add(word);
-                    currentLineLength += 1 + wordLength;
+                    currentLineLength += SINGLE_SPACE_LENGTH + wordLength;
                 } else {
                     formattedLines.add(createFormattedLine(currentLineWords, firstLine, false));
                     firstLine = false;
@@ -130,14 +134,14 @@ public class TextAlignment {
         StringBuilder line = new StringBuilder();
 
         if (firstLine) {
-            line.append(" ".repeat(4));
+            line.append(" ".repeat(DEFAULT_FIRST_LINE_INDENT));
         }
 
         if (words.size() == 1 || isLastLine) {
             line.append(String.join(" ", words));
         } else {
             int totalChars = words.stream().mapToInt(String::length).sum();
-            int availableLength = maxLineLength - (firstLine ? 4 : 0);
+            int availableLength = maxLineLength - (firstLine ? DEFAULT_FIRST_LINE_INDENT : 0);
             int totalSpaces = availableLength - totalChars;
             int spaceSlots = words.size() - 1;
 

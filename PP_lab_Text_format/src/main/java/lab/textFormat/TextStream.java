@@ -6,8 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class TextStream {
+    private static final String LINE_SEPARATOR = " ";
+    private static final String EMPTY_STRING = "";
+
     private BufferedReader reader;
-    private String currentFileName = "";
+    private String currentFileName = EMPTY_STRING;
 
     public TextStream() {
     }
@@ -27,7 +30,7 @@ public class TextStream {
             boolean firstLine = true;
             while ((line = fileReader.readLine()) != null) {
                 if (!firstLine) {
-                    content.append(" ");
+                    content.append(LINE_SEPARATOR);
                 }
                 content.append(line);
                 firstLine = false;
@@ -67,7 +70,7 @@ public class TextStream {
                 }
 
                 if (!firstLine) {
-                    paragraph.append(" ");
+                    paragraph.append(LINE_SEPARATOR);
                 }
                 paragraph.append(line.trim());
                 firstLine = false;
@@ -91,7 +94,7 @@ public class TextStream {
             try {
                 reader.close();
                 reader = null;
-                currentFileName = "";
+                currentFileName = EMPTY_STRING;
             } catch (IOException e) {
                 System.err.println("Error closing file: " + e.getMessage());
             }
