@@ -1,6 +1,4 @@
-package lab.textAlignment;
-
-import lab.textStream.TextStream;
+package lab.textFormat;
 
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -17,10 +15,13 @@ public class TextAlignment {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter input file name: ");
-        String inputFile = scanner.nextLine();
+        //String inputFile = scanner.nextLine();
+        String inputFile = "i.txt";
 
         System.out.print("Enter output file name: ");
-        String outputFile = scanner.nextLine();
+        // String outputFile = scanner.nextLine();
+        String outputFile = "o.txt";
+
 
         System.out.print("Enter maximum characters per line: ");
         int maxLineLength = scanner.nextInt();
@@ -42,6 +43,7 @@ public class TextAlignment {
             // Читаем абзацы один за другим
             while ((paragraph = TextStream.readParagraph()) != null) {
                 if (!paragraph.trim().isEmpty()) {
+
                     String formattedParagraph = formatParagraph(paragraph);
                     if (!firstParagraph) {
                         outputContent.append("\n"); // Перенос строки между абзацами
@@ -67,20 +69,27 @@ public class TextAlignment {
         List<String> words = splitIntoWords(paragraphText);
         List<String> formattedLines = new ArrayList<>();
         List<String> currentLineWords = new ArrayList<>();
+
         int currentLineLength = 0;
         boolean firstLine = true;
 
         for (String word : words) {
             int wordLength = word.length();
 
+            // Рассчитываем доступную длину для текущей строки
+            int availableLength = maxLineLength - (firstLine ? 4 : 0);
+
             if (currentLineWords.isEmpty()) {
+                // Первое слово в строке
                 currentLineWords.add(word);
                 currentLineLength = wordLength;
             } else {
-                if (currentLineLength + 1 + wordLength <= maxLineLength) {
+                // Проверяем, поместится ли слово с учетом доступной длины
+                if (currentLineLength + 1 + wordLength <= availableLength) {
                     currentLineWords.add(word);
                     currentLineLength += 1 + wordLength;
                 } else {
+                    // Строка заполнена - форматируем и начинаем новую
                     formattedLines.add(createFormattedLine(currentLineWords, firstLine, false));
                     firstLine = false;
                     currentLineWords.clear();

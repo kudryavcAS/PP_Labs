@@ -1,4 +1,4 @@
-package lab.textStream;
+package lab.textFormat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
