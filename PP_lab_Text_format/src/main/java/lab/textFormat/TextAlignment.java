@@ -6,24 +6,30 @@ import java.util.List;
 
 public class TextAlignment {
     private final int maxLineLength;
+    private final TextStream textStream;
 
     public TextAlignment(int maxLineLength) {
+        this(maxLineLength, new TextStream());
+    }
+
+    public TextAlignment(int maxLineLength, TextStream textStream) {
+        if (maxLineLength <= 0) {
+            throw new IllegalArgumentException("Max line length must be positive");
+        }
         this.maxLineLength = maxLineLength;
+        this.textStream = textStream;
     }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Enter input file name: ");
-        //String inputFile = scanner.nextLine();
-        String inputFile = "i.txt";
+        System.out.println("Enter input file name: ");
+        String inputFile = scanner.nextLine();
 
-        System.out.print("Enter output file name: ");
-        // String outputFile = scanner.nextLine();
-        String outputFile = "o.txt";
+        System.out.println("Enter output file name: ");
+        String outputFile = scanner.nextLine();
 
-
-        System.out.print("Enter maximum characters per line: ");
+        System.out.println("Enter maximum characters per line: ");
         int maxLineLength = scanner.nextInt();
         scanner.nextLine();
 
@@ -35,37 +41,33 @@ public class TextAlignment {
 
     public void processFile(String inputFile, String outputFile) {
         try {
-            TextStream.openFileForParagraphReading(inputFile);
+            textStream.openFileForParagraphReading(inputFile);
             StringBuilder outputContent = new StringBuilder();
             String paragraph;
             boolean firstParagraph = true;
 
-            // Читаем абзацы один за другим
-            while ((paragraph = TextStream.readParagraph()) != null) {
+            while ((paragraph = textStream.readParagraph()) != null) {
                 if (!paragraph.trim().isEmpty()) {
-
                     String formattedParagraph = formatParagraph(paragraph);
                     if (!firstParagraph) {
-                        outputContent.append("\n"); // Перенос строки между абзацами
+                        outputContent.append("\n");
                     }
                     outputContent.append(formattedParagraph);
                     firstParagraph = false;
                 }
             }
 
-            TextStream.closeFile();
-
-            // Записываем результат
-            TextStream.writeToFile(outputFile, outputContent.toString());
+            textStream.closeFile();
+            textStream.writeToFile(outputFile, outputContent.toString());
             System.out.println("Text aligned successfully!");
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            TextStream.closeFile();
+            textStream.closeFile();
         }
     }
 
-    private String formatParagraph(String paragraphText) {
+    String formatParagraph(String paragraphText) {
         List<String> words = splitIntoWords(paragraphText);
         List<String> formattedLines = new ArrayList<>();
         List<String> currentLineWords = new ArrayList<>();
@@ -76,20 +78,16 @@ public class TextAlignment {
         for (String word : words) {
             int wordLength = word.length();
 
-            // Рассчитываем доступную длину для текущей строки
             int availableLength = maxLineLength - (firstLine ? 4 : 0);
 
             if (currentLineWords.isEmpty()) {
-                // Первое слово в строке
                 currentLineWords.add(word);
                 currentLineLength = wordLength;
             } else {
-                // Проверяем, поместится ли слово с учетом доступной длины
                 if (currentLineLength + 1 + wordLength <= availableLength) {
                     currentLineWords.add(word);
                     currentLineLength += 1 + wordLength;
                 } else {
-                    // Строка заполнена - форматируем и начинаем новую
                     formattedLines.add(createFormattedLine(currentLineWords, firstLine, false));
                     firstLine = false;
                     currentLineWords.clear();
@@ -106,13 +104,13 @@ public class TextAlignment {
         return String.join("\n", formattedLines);
     }
 
-    private List<String> splitIntoWords(String text) {
+    List<String> splitIntoWords(String text) {
         List<String> words = new ArrayList<>();
         StringBuilder currentWord = new StringBuilder();
 
         for (char c : text.toCharArray()) {
             if (Character.isWhitespace(c)) {
-                if (currentWord.length() > 0) {
+                if (!currentWord.isEmpty()) {
                     words.add(currentWord.toString());
                     currentWord = new StringBuilder();
                 }
@@ -121,26 +119,23 @@ public class TextAlignment {
             }
         }
 
-        if (currentWord.length() > 0) {
+        if (!currentWord.isEmpty()) {
             words.add(currentWord.toString());
         }
 
         return words;
     }
 
-    private String createFormattedLine(List<String> words, boolean firstLine, boolean isLastLine) {
+    String createFormattedLine(List<String> words, boolean firstLine, boolean isLastLine) {
         StringBuilder line = new StringBuilder();
 
-        // Добавляем 4 пробела для красной строки если это первая строка абзаца
         if (firstLine) {
             line.append(" ".repeat(4));
         }
 
         if (words.size() == 1 || isLastLine) {
-            // Одно слово или последняя строка - просто соединяем пробелами
             line.append(String.join(" ", words));
         } else {
-            // Равномерно распределяем пробелы
             int totalChars = words.stream().mapToInt(String::length).sum();
             int availableLength = maxLineLength - (firstLine ? 4 : 0);
             int totalSpaces = availableLength - totalChars;

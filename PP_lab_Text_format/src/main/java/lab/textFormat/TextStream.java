@@ -6,10 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class TextStream {
-    private static BufferedReader reader;
-    private static String currentFileName = "";
+    private BufferedReader reader;
+    private String currentFileName = "";
 
-    public static void writeToFile(String fileName, String text) {
+    public TextStream() {
+    }
+
+    public void writeToFile(String fileName, String text) {
         try (FileWriter writer = new FileWriter(fileName)) {
             writer.write(text);
         } catch (IOException e) {
@@ -17,12 +20,12 @@ public class TextStream {
         }
     }
 
-    public static String readFromFile(String fileName) {
+    public String readFromFile(String fileName) {
         StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(fileName))) {
             String line;
             boolean firstLine = true;
-            while ((line = reader.readLine()) != null) {
+            while ((line = fileReader.readLine()) != null) {
                 if (!firstLine) {
                     content.append(" ");
                 }
@@ -35,11 +38,9 @@ public class TextStream {
         return content.toString();
     }
 
-    public static void openFileForParagraphReading(String fileName) {
+    public void openFileForParagraphReading(String fileName) {
         try {
-            if (reader != null) {
-                reader.close();
-            }
+            closeFile();
             reader = new BufferedReader(new FileReader(fileName));
             currentFileName = fileName;
         } catch (IOException e) {
@@ -47,7 +48,7 @@ public class TextStream {
         }
     }
 
-    public static String readParagraph() {
+    public String readParagraph() {
         if (reader == null) {
             return null;
         }
@@ -59,7 +60,7 @@ public class TextStream {
 
             while ((line = reader.readLine()) != null) {
                 if (line.trim().isEmpty()) {
-                    if (paragraph.length() > 0) {
+                    if (!paragraph.isEmpty()) {
                         return paragraph.toString().trim();
                     }
                     continue;
@@ -72,12 +73,10 @@ public class TextStream {
                 firstLine = false;
             }
 
-            // Возвращаем последний абзац (если файл закончился)
-            if (paragraph.length() > 0) {
+            if (!paragraph.isEmpty()) {
                 return paragraph.toString().trim();
             }
 
-            // Файл полностью прочитан
             closeFile();
             return null;
 
@@ -87,24 +86,23 @@ public class TextStream {
         }
     }
 
-    // Метод для закрытия файла
-    public static void closeFile() {
+    public void closeFile() {
         if (reader != null) {
             try {
                 reader.close();
                 reader = null;
-                setCurrentFileName("");
+                currentFileName = "";
             } catch (IOException e) {
                 System.err.println("Error closing file: " + e.getMessage());
             }
         }
     }
 
-    public static String getCurrentFileName() {
+    public String getCurrentFileName() {
         return currentFileName;
     }
 
-    public static void setCurrentFileName(String currentFileName) {
-        TextStream.currentFileName = currentFileName;
+    public boolean isFileOpen() {
+        return reader != null;
     }
 }
