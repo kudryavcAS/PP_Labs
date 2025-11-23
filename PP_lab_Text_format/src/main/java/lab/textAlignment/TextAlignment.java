@@ -5,8 +5,6 @@ import lab.textStream.TextStream;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.BufferedReader;
-import java.io.FileReader;
 
 public class TextAlignment {
     private final int maxLineLength;
@@ -35,31 +33,25 @@ public class TextAlignment {
     }
 
     public void processFile(String inputFile, String outputFile) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
+        try {
+            TextStream.openFileForParagraphReading(inputFile);
             StringBuilder outputContent = new StringBuilder();
+            String paragraph;
+            boolean firstParagraph = true;
 
-            List<String> currentParagraph = new ArrayList<>();
-
-            while (true) {
-                String line = reader.readLine();
-
-                if (line == null || line.trim().isEmpty()) {
-                    // Пустая строка или конец файла - заканчиваем абзац
-                    if (!currentParagraph.isEmpty()) {
-                        String formattedParagraph = formatParagraph(currentParagraph);
-                        if (outputContent.length() > 0) {
-                            outputContent.append("\n"); // Просто перенос строки между абзацами
-                        }
-                        outputContent.append(formattedParagraph);
-                        currentParagraph.clear();
+            // Читаем абзацы один за другим
+            while ((paragraph = TextStream.readParagraph()) != null) {
+                if (!paragraph.trim().isEmpty()) {
+                    String formattedParagraph = formatParagraph(paragraph);
+                    if (!firstParagraph) {
+                        outputContent.append("\n"); // Перенос строки между абзацами
                     }
-
-                    if (line == null) break; // Конец файла
-                } else {
-                    // Непустая строка - добавляем в текущий абзац
-                    currentParagraph.add(line.trim());
+                    outputContent.append(formattedParagraph);
+                    firstParagraph = false;
                 }
             }
+
+            TextStream.closeFile();
 
             // Записываем результат
             TextStream.writeToFile(outputFile, outputContent.toString());
@@ -67,14 +59,12 @@ public class TextAlignment {
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            TextStream.closeFile();
         }
     }
 
-    private String formatParagraph(List<String> paragraphLines) {
-        // Объединяем все строки абзаца в один текст
-        String paragraphText = String.join(" ", paragraphLines);
+    private String formatParagraph(String paragraphText) {
         List<String> words = splitIntoWords(paragraphText);
-
         List<String> formattedLines = new ArrayList<>();
         List<String> currentLineWords = new ArrayList<>();
         int currentLineLength = 0;
@@ -134,9 +124,7 @@ public class TextAlignment {
 
         // Добавляем 4 пробела для красной строки если это первая строка абзаца
         if (firstLine) {
-            for (int i = 0; i < 4; i++) {
-                line.append(" ");
-            }
+            line.append(" ".repeat(4));
         }
 
         if (words.size() == 1 || isLastLine) {
@@ -156,9 +144,7 @@ public class TextAlignment {
                 line.append(words.get(i));
                 if (i < words.size() - 1) {
                     int spacesToAdd = baseSpaces + (i < extraSpaces ? 1 : 0);
-                    for (int j = 0; j < spacesToAdd; j++) {
-                        line.append(" ");
-                    }
+                    line.append(" ".repeat(Math.max(0, spacesToAdd)));
                 }
             }
         }
