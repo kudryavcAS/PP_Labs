@@ -24,6 +24,9 @@ public class SimpleCalculator extends Application {
         num1Field = new TextField();
         num2Field = new TextField();
 
+        setupNumberValidation(num1Field);
+        setupNumberValidation(num2Field);
+
         operationComboBox = new ComboBox<>();
         operationComboBox.getItems().addAll("+", "-", "*", "/", "^", "%", "log");
         operationComboBox.setValue("+");
@@ -31,7 +34,7 @@ public class SimpleCalculator extends Application {
         Button calculateButton = new Button("Вычислить");
         resultLabel = new Label("Результат: ");
 
-        calculateButton.setOnAction(e -> calculate());
+        calculateButton.setOnAction(_ -> calculate());
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -58,8 +61,21 @@ public class SimpleCalculator extends Application {
         primaryStage.show();
     }
 
+    private void setupNumberValidation(TextField textField) {
+        textField.textProperty().addListener((_, oldValue, newValue) -> {
+            if (!newValue.matches("-?\\d*(\\.\\d*)?")) {
+                textField.setText(oldValue);
+            }
+        });
+    }
+
     private void calculate() {
         try {
+            if (num1Field.getText().isEmpty() || num2Field.getText().isEmpty()) {
+                resultLabel.setText("Ошибка: введите оба числа!");
+                return;
+            }
+
             double num1 = Double.parseDouble(num1Field.getText());
             double num2 = Double.parseDouble(num2Field.getText());
             String operation = operationComboBox.getValue();
