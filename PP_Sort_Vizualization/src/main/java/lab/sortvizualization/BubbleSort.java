@@ -1,0 +1,20 @@
+package lab.sortvizualization;
+
+public class BubbleSort implements SortingStrategy {
+    @Override
+    public void sort(int[] arr, Visualizer visualizer) throws InterruptedException {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = 0; j < arr.length - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    // Меням местами
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+
+                    // СООБЩАЕМ О ИЗМЕНЕНИИ!
+                    visualizer.onUpdate();
+                }
+            }
+        }
+    }
+}

@@ -28,7 +28,7 @@ public class SimpleCalculator extends Application {
         setupNumberValidation(num2Field);
 
         operationComboBox = new ComboBox<>();
-        operationComboBox.getItems().addAll("+", "-", "*", "/", "^", "%", "log");
+        operationComboBox.getItems().addAll("+", "-", "*", "/", "^", "%", "log", "!");
         operationComboBox.setValue("+");
 
         Button calculateButton = new Button("Вычислить");
@@ -120,13 +120,37 @@ public class SimpleCalculator extends Application {
                     }
                     result = Math.log(num1) / Math.log(num2);
                     break;
+                case "!":
+                    if (num1 < 0) {
+                        resultLabel.setText("Ошибка");
+                    } else {
+                        int v = (int) num1;
+                        double result1 = 1;
+
+                        for (int i = 1; i <= v; i++) {
+                            result1 = result1 * i;
+                        }
+                        result = result1;
+                    }
+                    break;
+
             }
 
-            resultLabel.setText(String.format("Результат: %.4f", result));
 
-        } catch (NumberFormatException e) {
+            if (Double.isInfinite(result)) {
+                resultLabel.setText("Результат: Бесконечность");
+            } else if (Double.isNaN(result)) {
+                resultLabel.setText("Результат: Не число");
+            } else if (Math.abs(result) > 1e10 || Math.abs(result) < 1e-4) {
+                resultLabel.setText(String.format("Результат: %.6e", result));
+            } else {
+                resultLabel.setText(String.format("Результат: %.6f", result));
+            }
+        } catch (
+                NumberFormatException e) {
             resultLabel.setText("Ошибка: введите корректные числа!");
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             resultLabel.setText("Ошибка: " + e.getMessage());
         }
     }
