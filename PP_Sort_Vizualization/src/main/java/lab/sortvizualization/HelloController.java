@@ -18,35 +18,33 @@ public class HelloController {
     @FXML private Button btnReset;
 
     private int[] array;
-    private static final int ARRAY_SIZE = 50; // Количество столбиков
-    private static final int DELAY_MS = 20;   // Скорость анимации (чем меньше, тем быстрее)
+    private static final int ARRAY_SIZE = 50;
+    private static final int DELAY_MS = 20;
 
     @FXML
     public void initialize() {
-        // Заполняем выпадающий список
+        // 1. ЗАПОЛНЯЕМ ПО-РУССКИ
         algorithmChoice.getItems().addAll(
-                "Bubble Sort",
-                "Selection Sort",
-                "Insertion Sort",
-                "Merge Sort",
-                "Heap Sort",
-                "Quick Sort (Hoare)"
+                "Пузырьковая сортировка",
+                "Сортировка выбором",
+                "Сортировка вставками",
+                "Сортировка слиянием",
+                "Пирамидальная сортировка",
+                "Быстрая сортировка (Хоара)"
         );
         algorithmChoice.getSelectionModel().selectFirst();
 
-        // Генерируем первый массив при старте
         onResetClick();
     }
 
     @FXML
     protected void onResetClick() {
-        // Создаем случайный массив
         array = new int[ARRAY_SIZE];
         Random random = new Random();
         for (int i = 0; i < ARRAY_SIZE; i++) {
-            array[i] = random.nextInt(10, 400); // Высота столбиков
+            array[i] = random.nextInt(10, 400);
         }
-        drawArray(); // Рисуем
+        drawArray();
     }
 
     @FXML
@@ -56,20 +54,13 @@ public class HelloController {
 
         if (strategy == null) return;
 
-        // Блокируем кнопки во время сортировки
         btnSort.setDisable(true);
         btnReset.setDisable(true);
 
-        // ЗАПУСКАЕМ В ОТДЕЛЬНОМ ПОТОКЕ
         new Thread(() -> {
             try {
                 strategy.sort(array, () -> {
-                    // Этот код вызывается из стратегии при каждом swap
-
-                    // 1. Обновляем UI (обязательно через Platform.runLater)
                     Platform.runLater(this::drawArray);
-
-                    // 2. Делаем паузу, чтобы глаз успел заметить
                     try {
                         Thread.sleep(DELAY_MS);
                     } catch (InterruptedException e) {
@@ -79,7 +70,6 @@ public class HelloController {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                // Когда закончили - разблокируем кнопки
                 Platform.runLater(() -> {
                     btnSort.setDisable(false);
                     btnReset.setDisable(false);
@@ -88,21 +78,21 @@ public class HelloController {
         }).start();
     }
 
-    // Фабричный метод выбора стратегии
+    // 2. ИЗМЕНЯЕМ ПРОВЕРКУ СТРОК (SWITCH)
     private SortingStrategy getStrategyByName(String name) {
         return switch (name) {
-            case "Bubble Sort" -> new BubbleSort();
-            case "Quick Sort (Hoare)" -> new QuickSortHoare();
-            // Сюда добавить остальные классы:
-            // case "Selection Sort" -> new SelectionSortStrategy();
-            // ...
+            case "Пузырьковая сортировка" -> new BubbleSort();
+            case "Сортировка вставками" -> new InsertionSort();
+            case "Сортировка выбором" -> new SelectionSort();
+            case "Сортировка слиянием" -> new MergeSort();
+            case "Пирамидальная сортировка" -> new HeapSort();
+            case "Быстрая сортировка (Хоара)" -> new QuickSortHoare();
             default -> null;
         };
     }
 
-    // Метод отрисовки
     private void drawArray() {
-        visualPane.getChildren().clear(); // Очищаем старое
+        visualPane.getChildren().clear();
 
         double paneWidth = visualPane.getWidth();
         double paneHeight = visualPane.getHeight();
@@ -111,13 +101,12 @@ public class HelloController {
         for (int i = 0; i < array.length; i++) {
             int value = array[i];
 
-            // Создаем прямоугольник
             Rectangle rect = new Rectangle();
-            rect.setX(i * barWidth);       // Позиция по X
-            rect.setY(paneHeight - value); // Позиция по Y (рисуем снизу)
-            rect.setWidth(barWidth - 2);   // -2 для маленького зазора между столбиками
+            rect.setX(i * barWidth);
+            rect.setY(paneHeight - value);
+            rect.setWidth(barWidth - 2);
             rect.setHeight(value);
-            rect.setFill(Color.CORNFLOWERBLUE); // Красивый цвет
+            rect.setFill(Color.CORNFLOWERBLUE);
 
             visualPane.getChildren().add(rect);
         }

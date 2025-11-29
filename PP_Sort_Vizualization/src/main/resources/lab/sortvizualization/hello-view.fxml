@@ -9,14 +9,14 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lab.sortvizualization.HelloController">
    <top>
-      <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="50.0" prefWidth="600.0" spacing="10.0">
          <padding>
             <Insets bottom="10.0" left="1.0" right="10.0" top="10.0" />
          </padding>
          <children>
-            <ComboBox id="algorithmChoice" fx:id="algorithmChoice" prefHeight="26.0" prefWidth="158.0" promptText="Выбрать сортировку" />
-            <Button id="btnReset" fx:id="btnReset" mnemonicParsing="false" onAction="#onResetClick" text="Сгенерировать массив" />
-            <Button id="btnSort" fx:id="btnSort" mnemonicParsing="false" onAction="#onSortClick" text="Запуск" />
+            <ComboBox id="algorithmChoice" fx:id="algorithmChoice" maxWidth="1.7976931348623157E308" promptText="Выбрать сортировку" HBox.hgrow="ALWAYS" />
+            <Button id="btnReset" fx:id="btnReset" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onResetClick" text="Сгенерировать массив" HBox.hgrow="ALWAYS" />
+            <Button id="btnSort" fx:id="btnSort" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onSortClick" text="Запуск" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </top>
