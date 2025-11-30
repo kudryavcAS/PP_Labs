@@ -5,20 +5,16 @@ public class HeapSort implements SortingStrategy {
     public void sort(int[] array, Visualizer visualizer) throws InterruptedException {
         int n = array.length;
 
-        // Построение кучи (перегруппировка массива)
         for (int i = n / 2 - 1; i >= 0; i--)
             heapify(array, n, i, visualizer);
 
-        // Один за другим извлекаем элементы из кучи
         for (int i = n - 1; i > 0; i--) {
-            // Перемещаем текущий корень в конец
             int temp = array[0];
             array[0] = array[i];
             array[i] = temp;
 
-            visualizer.onUpdate(); // Показываем обмен
+            visualizer.onUpdate();
 
-            // Вызываем процедуру heapify на уменьшенной куче
             heapify(array, i, 0, visualizer);
         }
     }
@@ -39,7 +35,7 @@ public class HeapSort implements SortingStrategy {
             arr[i] = arr[largest];
             arr[largest] = swap;
 
-            visualizer.onUpdate(); // Показываем перестройку кучи
+            visualizer.onUpdate();
 
             heapify(arr, n, largest, visualizer);
         }

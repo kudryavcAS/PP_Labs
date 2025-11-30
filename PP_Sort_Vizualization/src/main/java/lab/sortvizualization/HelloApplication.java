@@ -15,6 +15,10 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
 
         stage.setTitle("Визуализация сортировок");
+
+        stage.setMinWidth(800);  // Меньше этого ширину не сделать
+        stage.setMinHeight(600);
+
         stage.setScene(scene);
         stage.show();
     }

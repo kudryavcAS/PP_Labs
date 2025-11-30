@@ -12,10 +12,14 @@ import java.util.Random;
 
 public class HelloController {
 
-    @FXML private ComboBox<String> algorithmChoice;
-    @FXML private Pane visualPane;
-    @FXML private Button btnSort;
-    @FXML private Button btnReset;
+    @FXML
+    private ComboBox<String> algorithmChoice;
+    @FXML
+    private Pane visualPane;
+    @FXML
+    private Button btnSort;
+    @FXML
+    private Button btnReset;
 
     private int[] array;
     private static final int ARRAY_SIZE = 50;
@@ -33,6 +37,9 @@ public class HelloController {
                 "Быстрая сортировка (Хоара)"
         );
         algorithmChoice.getSelectionModel().selectFirst();
+
+        visualPane.widthProperty().addListener((obs, oldVal, newVal) -> drawArray());
+        visualPane.heightProperty().addListener((obs, oldVal, newVal) -> drawArray());
 
         onResetClick();
     }
@@ -94,21 +101,42 @@ public class HelloController {
     private void drawArray() {
         visualPane.getChildren().clear();
 
+        // ВАЖНО: Мы берем ТЕКУЩУЮ ширину и высоту панели
         double paneWidth = visualPane.getWidth();
         double paneHeight = visualPane.getHeight();
+
+        // Защита от деления на ноль или отрисовки в свернутом окне
+        if (paneWidth <= 0 || paneHeight <= 0) return;
+
         double barWidth = paneWidth / ARRAY_SIZE;
 
         for (int i = 0; i < array.length; i++) {
             int value = array[i];
 
+            // Масштабируем высоту столбика относительно высоты окна
+            // Например, максимальное значение в массиве у нас 400.
+            // Если окно высокое, столбики должны стать выше.
+
+            // Вариант А: Простой (как у тебя сейчас)
+            // Столбики фиксированной высоты (до 400 пикселей), даже если окно 1000px.
+            // rect.setHeight(value);
+            // rect.setY(paneHeight - value);
+
+            // Вариант Б: АДАПТИВНЫЙ (Столбики растут вместе с окном)
+            // Для этого нам нужно нормализовать высоту.
+            // Допустим, макс высота значения = 400 (из генерации массива).
+            double scaleFactor = paneHeight / 450.0; // 450 - чуть больше макс значения (400)
+            double scaledHeight = value * scaleFactor;
+
             Rectangle rect = new Rectangle();
             rect.setX(i * barWidth);
-            rect.setY(paneHeight - value);
-            rect.setWidth(barWidth - 2);
-            rect.setHeight(value);
+            rect.setY(paneHeight - scaledHeight);
+            rect.setWidth(barWidth - 2);   // -2 или -1, чтобы при сжатии не слипались
+            rect.setHeight(scaledHeight);
             rect.setFill(Color.CORNFLOWERBLUE);
 
             visualPane.getChildren().add(rect);
         }
+
     }
 }
