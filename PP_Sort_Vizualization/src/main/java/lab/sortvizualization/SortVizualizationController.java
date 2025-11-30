@@ -24,7 +24,7 @@ public class SortVizualizationController {
     private Button btnPause;
 
     private int[] array;
-    private static final int ARRAY_SIZE = 50;
+    private static final int ARRAY_SIZE = 100;
     private static final int DELAY_MS = 20;
 
     private Thread sortingThread;
@@ -39,7 +39,8 @@ public class SortVizualizationController {
                 "Сортировка вставками",
                 "Сортировка слиянием",
                 "Пирамидальная сортировка",
-                "Быстрая сортировка (Хоара)"
+                "Быстрая сортировка (Хоара)",
+                "Сортировка удачей"
         );
         algorithmChoice.getSelectionModel().selectFirst();
 
@@ -157,6 +158,7 @@ public class SortVizualizationController {
             case "Сортировка слиянием" -> new MergeSort();
             case "Пирамидальная сортировка" -> new HeapSort();
             case "Быстрая сортировка (Хоара)" -> new QuickSortHoare();
+            case "Сортировка удачей" -> new BogoSort();
             default -> null;
         };
     }
