@@ -29,7 +29,7 @@ public class QuickSortHoare implements SortingStrategy {
             arr[i] = arr[j];
             arr[j] = temp;
 
-            visualizer.onUpdate(); // Визуализируем обмен
+            visualizer.onUpdate();
         }
     }
 }

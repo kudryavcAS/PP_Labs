@@ -36,6 +36,7 @@ public class HeapSort implements SortingStrategy {
             arr[largest] = swap;
 
             visualizer.onUpdate();
+            visualizer.onUpdate();
 
             heapify(arr, n, largest, visualizer);
         }

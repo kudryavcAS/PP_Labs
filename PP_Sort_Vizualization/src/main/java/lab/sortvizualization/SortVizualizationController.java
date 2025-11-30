@@ -20,14 +20,19 @@ public class SortVizualizationController {
     private Button btnSort;
     @FXML
     private Button btnReset;
+    @FXML
+    private Button btnPause;
 
     private int[] array;
     private static final int ARRAY_SIZE = 50;
     private static final int DELAY_MS = 20;
 
+    private Thread sortingThread;
+    private final Object pauseLock = new Object();
+    private volatile boolean isPaused = false;
+
     @FXML
     public void initialize() {
-        // 1. ЗАПОЛНЯЕМ ПО-РУССКИ
         algorithmChoice.getItems().addAll(
                 "Пузырьковая сортировка",
                 "Сортировка выбором",
@@ -38,54 +43,112 @@ public class SortVizualizationController {
         );
         algorithmChoice.getSelectionModel().selectFirst();
 
-        visualPane.widthProperty().addListener((obs, oldVal, newVal) -> drawArray());
-        visualPane.heightProperty().addListener((obs, oldVal, newVal) -> drawArray());
+        visualPane.widthProperty().addListener((_, _, _) -> drawArray());
+        visualPane.heightProperty().addListener((_, _, _) -> drawArray());
 
         onResetClick();
     }
 
     @FXML
     protected void onResetClick() {
+        stopCurrentSorting();
+
         array = new int[ARRAY_SIZE];
         Random random = new Random();
         for (int i = 0; i < ARRAY_SIZE; i++) {
             array[i] = random.nextInt(10, 400);
         }
         drawArray();
+
+        setButtonsState(false);
+        isPaused = false;
+        btnPause.setText("Пауза");
+    }
+
+    @FXML
+    protected void onPauseClick() {
+        synchronized (pauseLock) {
+            if (isPaused) {
+                isPaused = false;
+                btnPause.setText("Пауза");
+                pauseLock.notifyAll();
+            } else {
+                isPaused = true;
+                btnPause.setText("Продолжить");
+            }
+        }
     }
 
     @FXML
     protected void onSortClick() {
+        stopCurrentSorting();
+
         String selected = algorithmChoice.getValue();
         SortingStrategy strategy = getStrategyByName(selected);
-
         if (strategy == null) return;
 
-        btnSort.setDisable(true);
-        btnReset.setDisable(true);
+        setButtonsState(true);
+        isPaused = false;
+        btnPause.setText("Пауза");
 
-        new Thread(() -> {
+        Runnable task = () -> {
             try {
                 strategy.sort(array, () -> {
+                    checkPause();
+
                     Platform.runLater(this::drawArray);
+
                     try {
                         Thread.sleep(DELAY_MS);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        throw new RuntimeException("Stop");
+                    }
                 });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (Exception _) {
             } finally {
-                Platform.runLater(() -> {
-                    btnSort.setDisable(false);
-                    btnReset.setDisable(false);
-                });
+                Platform.runLater(() -> setButtonsState(false));
             }
-        }).start();
+        };
+
+        sortingThread = new Thread(task);
+        sortingThread.setDaemon(true);
+        sortingThread.start();
     }
 
-    // 2. ИЗМЕНЯЕМ ПРОВЕРКУ СТРОК (SWITCH)
+    private void checkPause() {
+        synchronized (pauseLock) {
+            while (isPaused) {
+                try {
+                    pauseLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
+    }
+
+    private void stopCurrentSorting() {
+        if (sortingThread != null && sortingThread.isAlive()) {
+            sortingThread.interrupt();
+            try {
+                sortingThread.join(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void setButtonsState(boolean isRunning) {
+        btnSort.setDisable(isRunning);
+        btnReset.setDisable(false);
+        btnPause.setDisable(!isRunning);
+    }
+
     private SortingStrategy getStrategyByName(String name) {
         return switch (name) {
             case "Пузырьковая сортировка" -> new BubbleSort();
@@ -100,43 +163,22 @@ public class SortVizualizationController {
 
     private void drawArray() {
         visualPane.getChildren().clear();
-
-        // ВАЖНО: Мы берем ТЕКУЩУЮ ширину и высоту панели
         double paneWidth = visualPane.getWidth();
         double paneHeight = visualPane.getHeight();
-
-        // Защита от деления на ноль или отрисовки в свернутом окне
         if (paneWidth <= 0 || paneHeight <= 0) return;
 
         double barWidth = paneWidth / ARRAY_SIZE;
+        double scaleFactor = paneHeight / 450.0;
 
         for (int i = 0; i < array.length; i++) {
-            int value = array[i];
-
-            // Масштабируем высоту столбика относительно высоты окна
-            // Например, максимальное значение в массиве у нас 400.
-            // Если окно высокое, столбики должны стать выше.
-
-            // Вариант А: Простой (как у тебя сейчас)
-            // Столбики фиксированной высоты (до 400 пикселей), даже если окно 1000px.
-            // rect.setHeight(value);
-            // rect.setY(paneHeight - value);
-
-            // Вариант Б: АДАПТИВНЫЙ (Столбики растут вместе с окном)
-            // Для этого нам нужно нормализовать высоту.
-            // Допустим, макс высота значения = 400 (из генерации массива).
-            double scaleFactor = paneHeight / 450.0; // 450 - чуть больше макс значения (400)
-            double scaledHeight = value * scaleFactor;
-
+            double scaledHeight = array[i] * scaleFactor;
             Rectangle rect = new Rectangle();
             rect.setX(i * barWidth);
             rect.setY(paneHeight - scaledHeight);
-            rect.setWidth(barWidth - 2);   // -2 или -1, чтобы при сжатии не слипались
+            rect.setWidth(barWidth - 1);
             rect.setHeight(scaledHeight);
             rect.setFill(Color.CORNFLOWERBLUE);
-
             visualPane.getChildren().add(rect);
         }
-
     }
 }
