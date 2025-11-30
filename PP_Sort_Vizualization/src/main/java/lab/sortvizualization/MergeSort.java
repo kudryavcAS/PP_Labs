@@ -18,22 +18,18 @@ public class MergeSort implements SortingStrategy {
     }
 
     private void merge(int[] arr, int l, int m, int r, Visualizer visualizer) throws InterruptedException {
-        // Размеры подмассивов
         int n1 = m - l + 1;
         int n2 = r - m;
 
-        // Временные массивы
         int[] L = new int[n1];
         int[] R = new int[n2];
 
-        // Копируем данные
         System.arraycopy(arr, l, L, 0, n1);
         System.arraycopy(arr, m + 1, R, 0, n2);
 
         int i = 0, j = 0;
         int k = l;
 
-        // Слияние
         while (i < n1 && j < n2) {
             if (L[i] <= R[j]) {
                 arr[k] = L[i];
@@ -42,12 +38,10 @@ public class MergeSort implements SortingStrategy {
                 arr[k] = R[j];
                 j++;
             }
-            // Визуализируем изменение основного массива
             visualizer.onUpdate();
             k++;
         }
 
-        // Докопируем остатки
         while (i < n1) {
             arr[k] = L[i];
             i++;

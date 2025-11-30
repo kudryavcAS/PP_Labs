@@ -10,7 +10,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Random;
 
-public class HelloController {
+public class SortVizualizationController {
 
     @FXML
     private ComboBox<String> algorithmChoice;
