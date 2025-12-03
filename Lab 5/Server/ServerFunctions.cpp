@@ -166,18 +166,21 @@ HANDLE createDatabase(std::string& outFilename, int& outClientCount) {
 
 	int empCount;
 	std::cout << "Enter number of employees: ";
-	std::cin >> empCount;
+	inputNatural(empCount);
 
 	for (int i = 0; i < empCount; ++i) {
 		Employee emp;
 		std::cout << "Employee " << (i + 1) << "\nID: ";
-		std::cin >> emp.num;
+		inputNatural(emp.num);
+
 		std::cout << "Name (max 30 chars): ";
 		std::string tempName;
-		std::cin >> tempName;
-		strncpy_s(emp.name, tempName.c_str(), 30); // Безопасное копирование
+		std::getline(std::cin, tempName);
+
+		strncpy_s(emp.name, tempName.c_str(), 30);
+
 		std::cout << "Hours: ";
-		std::cin >> emp.hours;
+		inputDouble(emp.hours);
 
 		DWORD written;
 		WriteFile(hFile, &emp, sizeof(Employee), &written, NULL);
@@ -186,11 +189,10 @@ HANDLE createDatabase(std::string& outFilename, int& outClientCount) {
 	printFileContent(outFilename);
 
 	std::cout << "\nEnter number of clients to launch: ";
-	std::cin >> outClientCount;
+	inputNatural(outClientCount);
 
 	return hFile;
 }
-
 void launchClients(int count) {
 	for (int i = 0; i < count; ++i) {
 		STARTUPINFO si;

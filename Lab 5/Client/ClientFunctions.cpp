@@ -35,11 +35,7 @@ void processSession(HANDLE hPipe) {
 	while (running) {
 		std::cout << "\nSelect option:\n1. Modify record\n2. Read record\n3. Exit\n> ";
 		int choice;
-		if (!(std::cin >> choice)) {
-			std::cin.clear();
-			std::cin.ignore(1000, '\n');
-			continue;
-		}
+		inputNatural(choice, 3);
 
 		if (choice == 3) {
 			running = false;
@@ -51,7 +47,7 @@ void processSession(HANDLE hPipe) {
 		req.type = (choice == 1) ? RequestType::MODIFY : RequestType::READ;
 
 		std::cout << "Enter Employee ID: ";
-		std::cin >> req.employeeNum;
+		inputNatural(req.employeeNum);
 
 		DWORD bytesWritten, bytesRead;
 		// 1. Посылаем запрос
@@ -88,7 +84,7 @@ void processSession(HANDLE hPipe) {
 			strncpy_s(newEmp.name, tempName.c_str(), 30);
 
 			std::cout << "Current Hours: " << newEmp.hours << ". Enter new Hours: ";
-			std::cin >> newEmp.hours;
+			inputDouble(newEmp.hours);
 
 			std::cout << "Press 'y' to save changes, any other key to cancel: ";
 			char c; std::cin >> c;
@@ -98,7 +94,7 @@ void processSession(HANDLE hPipe) {
 		}
 		else {
 			std::cout << "\n[READ MODE] Press any key to release lock and finish...";
-			_getch();
+			(void)_getch();
 		}
 
 		// 3. Отправляем действие завершения
