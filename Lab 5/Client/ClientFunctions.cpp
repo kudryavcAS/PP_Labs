@@ -3,7 +3,7 @@
 void printEmployee(const Employee& e) {
 	std::cout << "ID: " << e.num
 		<< ", Name: " << std::string(e.name)
-		<< ", Hours: " << e.hours << std::endl;
+		<< ", Hours: " << e.hours << "\n";
 }
 
 HANDLE connectToServer() {
@@ -66,7 +66,7 @@ void processSession(HANDLE hPipe) {
 		}
 
 		if (!resp.found) {
-			std::cout << "Server message: " << std::string(resp.message) << std::endl;
+			std::cout << "Server message: " << std::string(resp.message) << "\n";
 			continue;
 		}
 
@@ -80,7 +80,8 @@ void processSession(HANDLE hPipe) {
 			std::cout << "\n[MODIFY MODE]\n";
 			std::cout << "Current Name: " << std::string(newEmp.name) << ". Enter new Name: ";
 			std::string tempName;
-			std::cin >> tempName;
+			std::getline(std::cin, tempName);
+
 			strncpy_s(newEmp.name, tempName.c_str(), 30);
 
 			std::cout << "Current Hours: " << newEmp.hours << ". Enter new Hours: ";

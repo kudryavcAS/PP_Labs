@@ -12,7 +12,7 @@ void cleanupSync() {
 
 void log(const std::string& msg) {
 	EnterCriticalSection(&g_csConsole);
-	std::cout << "[SERVER]: " << msg << std::endl;
+	std::cout << "[SERVER]: " << msg << "\n";
 	LeaveCriticalSection(&g_csConsole);
 }
 
@@ -150,17 +150,17 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 	return 0;
 }
 
-HANDLE createDatabase(std::string& outFilename, int& outClientCount) {
+HANDLE createDatabase(std::string& filename, int& clientCount) {
 	std::cout << "Enter filename for database: ";
-	std::cin >> outFilename;
+	std::cin >> filename;
 
-	HANDLE hFile = CreateFile(outFilename.c_str(),
+	HANDLE hFile = CreateFile(filename.c_str(),
 		GENERIC_READ | GENERIC_WRITE,
 		FILE_SHARE_READ | FILE_SHARE_WRITE,
 		NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) {
-		std::cerr << "CreateFile failed: " << GetLastError() << std::endl;
+		std::cerr << "CreateFile failed: " << GetLastError() << "\n";
 		exit(1);
 	}
 
@@ -186,10 +186,10 @@ HANDLE createDatabase(std::string& outFilename, int& outClientCount) {
 		WriteFile(hFile, &emp, sizeof(Employee), &written, NULL);
 	}
 
-	printFileContent(outFilename);
+	printFileContent(filename);
 
 	std::cout << "\nEnter number of clients to launch: ";
-	inputNatural(outClientCount);
+	inputNatural(clientCount);
 
 	return hFile;
 }
@@ -211,7 +211,7 @@ void launchClients(int count) {
 			CloseHandle(pi.hThread);
 		}
 		else {
-			std::cerr << "Failed to start Client.exe. Error: " << GetLastError() << std::endl;
+			std::cerr << "Failed to start Client.exe. Error: " << GetLastError() << "\n";
 		}
 	}
 }
@@ -230,7 +230,7 @@ void runServer(HANDLE hFile, int clientCount) {
 		);
 
 		if (hPipe == INVALID_HANDLE_VALUE) {
-			std::cerr << "Pipe creation failed." << std::endl;
+			std::cerr << "Pipe creation failed." << "\n";
 			hThreads[i] = NULL;
 			continue;
 		}
