@@ -6,10 +6,12 @@
 #include <cfloat>
 
 const std::string PIPE_NAME = "\\\\.\\pipe\\EmployeePipe";
+const int NAME_SIZE = 30;
+const int MESSAGE_SIZE = 255;
 
 struct Employee {
 	int num;
-	char name[31];
+	char name[NAME_SIZE + 1];
 	double hours;
 };
 
@@ -26,7 +28,7 @@ struct Request {
 struct Response {
 	bool found;
 	Employee record;
-	char message[256];
+	char message[MESSAGE_SIZE + 1];
 };
 
 enum class EndAction {
@@ -66,7 +68,7 @@ inline void inputDouble(double& real, double min = 0.0, double max = DBL_MAX) {
 			std::cout << "Invalid input. Enter a number (" << min << " - " << max << "): ";
 			continue;
 		}
-	
+
 		std::cin.ignore(INT_MAX, '\n');
 		break;
 	}

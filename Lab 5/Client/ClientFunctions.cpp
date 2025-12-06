@@ -7,7 +7,6 @@ void printEmployee(const Employee& e) {
 }
 
 HANDLE connectToServer() {
-	// Ждем доступности канала
 	if (!WaitNamedPipe(PIPE_NAME.c_str(), NMPWAIT_WAIT_FOREVER)) {
 		return INVALID_HANDLE_VALUE;
 	}
@@ -33,7 +32,7 @@ HANDLE connectToServer() {
 void processSession(HANDLE hPipe) {
 	bool running = true;
 	while (running) {
-		std::cout << "\nSelect option:\n1. Modify record\n2. Read record\n3. Exit\n> ";
+		std::cout << "Select option:\n1. Modify record\n2. Read record\n3. Exit\n> ";
 		int choice;
 		inputNatural(choice, 3);
 
@@ -50,7 +49,6 @@ void processSession(HANDLE hPipe) {
 		inputNatural(req.employeeNum);
 
 		DWORD bytesWritten, bytesRead;
-		// 1. Посылаем запрос
 		if (!WriteFile(hPipe, &req, sizeof(Request), &bytesWritten, NULL)) {
 			std::cerr << "Connection lost (Write request).\n";
 			break;
@@ -59,7 +57,6 @@ void processSession(HANDLE hPipe) {
 		Response resp;
 		std::cout << "Waiting for server (lock might be active)...\n";
 
-		// 2. Читаем ответ (блокируется, пока сервер не захватит нужный lock)
 		if (!ReadFile(hPipe, &resp, sizeof(Response), &bytesRead, NULL)) {
 			std::cerr << "Connection lost (Read response).\n";
 			break;
@@ -70,7 +67,6 @@ void processSession(HANDLE hPipe) {
 			continue;
 		}
 
-		std::cout << "Record accessed: ";
 		printEmployee(resp.record);
 
 		EndAction action = EndAction::FINISH;
@@ -94,14 +90,12 @@ void processSession(HANDLE hPipe) {
 			}
 		}
 		else {
-			std::cout << "\n[READ MODE] Press any key to release lock and finish...";
+			std::cout << "\n[READ MODE] Press any key to release lock and finish.";
 			(void)_getch();
 		}
 
-		// 3. Отправляем действие завершения
 		if (!WriteFile(hPipe, &action, sizeof(EndAction), &bytesWritten, NULL)) break;
 
-		// 4. Если сохраняем, отправляем саму структуру
 		if (action == EndAction::SAVE) {
 			WriteFile(hPipe, &newEmp, sizeof(Employee), &bytesWritten, NULL);
 			std::cout << "Modification sent.\n";

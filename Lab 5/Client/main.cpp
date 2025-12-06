@@ -1,6 +1,16 @@
 #include "Client.hpp"
 
-int main() {
+int main(int argc, char* argv[]) {
+	std::string title = "Client";
+
+	if (argc > 1) {
+		title += " " + std::string(argv[1]);
+	}
+
+#ifdef _WIN32
+	SetConsoleTitle(title.c_str());
+#endif
+
 	HANDLE hPipe = connectToServer();
 
 	if (hPipe == INVALID_HANDLE_VALUE) {

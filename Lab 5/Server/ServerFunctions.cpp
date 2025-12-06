@@ -12,26 +12,34 @@ void cleanupSync() {
 
 void log(const std::string& msg) {
 	EnterCriticalSection(&g_csConsole);
-	std::cout << "[SERVER]: " << msg << "\n";
+	std::cout << "[SERVER Thread " << GetCurrentThreadId() << "]: " << msg << "\n";
 	LeaveCriticalSection(&g_csConsole);
 }
 
 void printFileContent(const std::string& filename) {
-	std::ifstream file(filename, std::ios::binary);
-	if (!file.is_open()) return;
+	HANDLE hFile = CreateFile(filename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE) return;
 
 	Employee e;
+	DWORD bytesRead;
+
 	EnterCriticalSection(&g_csConsole);
 	std::cout << "\n--- File Content ---\n";
-	std::cout << "ID\tName\tHours\n";
-	while (file.read(reinterpret_cast<char*>(&e), sizeof(Employee))) {
-		std::cout << e.num << "\t" << e.name << "\t" << e.hours << "\n";
+	std::cout << std::left << std::setw(10) << "ID" << std::setw(35) << "Name" << std::setw(10) << "Hours" << "\n";
+	std::cout << std::string(55, '-') << "\n";
+
+	while (ReadFile(hFile, &e, sizeof(Employee), &bytesRead, NULL) && bytesRead > 0) {
+		std::cout << std::left << std::setw(10) << e.num
+			<< std::setw(35) << e.name << std::setw(10) << e.hours << "\n";
 	}
-	std::cout << "--------------------\n";
+	std::cout << std::string(55, '-') << "\n";
 	LeaveCriticalSection(&g_csConsole);
-	file.close();
+	CloseHandle(hFile);
 }
 
+// --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОИСКА ---
 long long findRecordOffset(HANDLE hFile, int id) {
 	LARGE_INTEGER fileSize;
 	if (!GetFileSizeEx(hFile, &fileSize)) return -1;
@@ -45,13 +53,44 @@ long long findRecordOffset(HANDLE hFile, int id) {
 		ov.Offset = static_cast<DWORD>(currentPos);
 		ov.OffsetHigh = static_cast<DWORD>(currentPos >> 32);
 
+		// 1. Пытаемся прочитать запись
 		if (!ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) || bytesRead == 0) {
-			break;
+
+			// 2. Если чтение не удалось, проверяем причину
+			DWORD err = GetLastError();
+
+			if (err == ERROR_LOCK_VIOLATION) {
+				// АГА! Кто-то (Писатель) держит эту запись под замком.
+				// Мы не можем прочитать ID, поэтому не знаем, тот ли это сотрудник.
+				// НАДО ПОДОЖДАТЬ, пока писатель закончит.
+
+				// Пытаемся поставить свою блокировку (Shared) на этот же участок.
+				// LockFileEx УСНЕТ, пока Писатель не снимет свой Exclusive Lock.
+				if (LockFileEx(hFile, 0, 0, sizeof(Employee), 0, &ov)) {
+
+					// Мы проснулись! Значит писатель закончил.
+					// Сразу снимаем свою блокировку, чтобы прочитать данные.
+					UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ov);
+
+					// Читаем заново (теперь должно получиться)
+					if (ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) && bytesRead > 0) {
+						if (emp.num == id) return currentPos;
+					}
+				}
+				// Если даже после ожидания не прочиталось -> идем к следующей записи
+			}
+			else {
+				// Если ошибка другая (конец файла или диск сломался) -> выходим
+				break;
+			}
+		}
+		else {
+			// Чтение прошло успешно с первого раза
+			if (emp.num == id) {
+				return currentPos;
+			}
 		}
 
-		if (emp.num == id) {
-			return currentPos;
-		}
 		currentPos += sizeof(Employee);
 	}
 	return -1;
@@ -59,9 +98,25 @@ long long findRecordOffset(HANDLE hFile, int id) {
 
 DWORD WINAPI clientThread(LPVOID lpParam) {
 	std::unique_ptr<ThreadParam> params(static_cast<ThreadParam*>(lpParam));
-
 	HANDLE hPipe = params->hPipe;
-	HANDLE hFile = params->hFile;
+
+	// Открываем свой дескриптор файла
+	HANDLE hLocalFile = CreateFile(
+		params->dbFileName.c_str(),
+		GENERIC_READ | GENERIC_WRITE,
+		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+
+	if (hLocalFile == INVALID_HANDLE_VALUE) {
+		log("Error: Could not open database file in thread.");
+		DisconnectNamedPipe(hPipe);
+		CloseHandle(hPipe);
+		return 1;
+	}
 
 	DWORD bytesRead, bytesWritten;
 	Request req;
@@ -70,11 +125,14 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		if (bytesRead == 0) break;
 
 		Response resp;
-		long long offset = findRecordOffset(hFile, req.employeeNum);
+
+		// Теперь эта функция УСНЕТ, если наткнется на изменяемую запись,
+		// а не вернет -1.
+		long long offset = findRecordOffset(hLocalFile, req.employeeNum);
 
 		if (offset == -1) {
 			resp.found = false;
-			strncpy_s(resp.message, "Employee not found.", 255);
+			strncpy_s(resp.message, "Employee not found.", MESSAGE_SIZE);
 			WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 			continue;
 		}
@@ -88,43 +146,47 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		ovLock.Offset = static_cast<DWORD>(offset);
 		ovLock.OffsetHigh = static_cast<DWORD>(offset >> 32);
 
-		log("Waiting lock for ID " + std::to_string(req.employeeNum));
+		log("Waiting lock for ID " + std::to_string(req.employeeNum) +
+			(req.type == RequestType::MODIFY ? " (EXCLUSIVE)" : " (SHARED)"));
 
-		if (!LockFileEx(hFile, lockFlags, 0, sizeof(Employee), 0, &ovLock)) {
+		if (!LockFileEx(hLocalFile, lockFlags, 0, sizeof(Employee), 0, &ovLock)) {
 			resp.found = false;
-			strncpy_s(resp.message, "Server lock error.", 255);
+			strncpy_s(resp.message, "Server lock error.", MESSAGE_SIZE);
 			WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 			continue;
 		}
 
-		if (!ReadFile(hFile, &resp.record, sizeof(Employee), &bytesRead, &ovLock)) {
-			UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ovLock);
+		log("Acquired lock for ID " + std::to_string(req.employeeNum));
+
+		if (!ReadFile(hLocalFile, &resp.record, sizeof(Employee), &bytesRead, &ovLock)) {
+			UnlockFileEx(hLocalFile, 0, sizeof(Employee), 0, &ovLock);
 			resp.found = false;
-			strncpy_s(resp.message, "Server read error.", 255);
+			strncpy_s(resp.message, "Server read error.", MESSAGE_SIZE);
 			WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 			continue;
 		}
 
 		resp.found = true;
-		strncpy_s(resp.message, "OK", 255);
+		strncpy_s(resp.message, "OK", MESSAGE_SIZE);
 		WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 
 		EndAction action;
-		Employee modifiedEmp;
-
 		if (ReadFile(hPipe, &action, sizeof(EndAction), &bytesRead, NULL)) {
 			if (req.type == RequestType::MODIFY && action == EndAction::SAVE) {
+				Employee modifiedEmp;
 				if (ReadFile(hPipe, &modifiedEmp, sizeof(Employee), &bytesRead, NULL)) {
-					WriteFile(hFile, &modifiedEmp, sizeof(Employee), &bytesWritten, &ovLock);
+					WriteFile(hLocalFile, &modifiedEmp, sizeof(Employee), &bytesWritten, &ovLock);
+					FlushFileBuffers(hLocalFile);
 					log("Updated ID " + std::to_string(modifiedEmp.num));
 				}
 			}
 		}
 
-		UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ovLock);
-		log("Unlocked ID " + std::to_string(req.employeeNum));
+		UnlockFileEx(hLocalFile, 0, sizeof(Employee), 0, &ovLock);
+		log("Released lock for ID " + std::to_string(req.employeeNum));
 	}
 
+	CloseHandle(hLocalFile);
 	FlushFileBuffers(hPipe);
 	DisconnectNamedPipe(hPipe);
 	CloseHandle(hPipe);
@@ -155,20 +217,17 @@ HANDLE createDatabase(std::string& outFilename, int& outClientCount) {
 		Employee emp;
 		std::cout << "Employee " << (i + 1) << "\nID: ";
 		inputNatural(emp.num);
-
-		std::cout << "Name (max 9 chars): ";
+		std::cout << "Name (max " << NAME_SIZE << " chars): ";
 		std::string tempName;
 		std::getline(std::cin, tempName);
-
-		strncpy_s(emp.name, tempName.c_str(), 30);
-
+		strncpy_s(emp.name, tempName.c_str(), NAME_SIZE);
 		std::cout << "Hours: ";
 		inputDouble(emp.hours);
-
 		DWORD written;
 		WriteFile(hFile, &emp, sizeof(Employee), &written, NULL);
 	}
 
+	FlushFileBuffers(hFile);
 	printFileContent(outFilename);
 
 	std::cout << "\nEnter number of clients to launch: ";
@@ -185,7 +244,7 @@ void launchClients(int count) {
 		si.cb = sizeof(si);
 		ZeroMemory(&pi, sizeof(pi));
 
-		std::string cmdLine = "Client.exe";
+		std::string cmdLine = "Client.exe " + std::to_string(i + 1);
 		std::vector<char> cmdBuf(cmdLine.begin(), cmdLine.end());
 		cmdBuf.push_back(0);
 
@@ -194,13 +253,10 @@ void launchClients(int count) {
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
 		}
-		else {
-			std::cerr << "Failed to start Client.exe. Error: " << GetLastError() << "\n";
-		}
 	}
 }
 
-void runServer(HANDLE hFile, int clientCount) {
+void runServer(const std::string& dbFileName, int clientCount) {
 	std::vector<HANDLE> hThreads;
 	hThreads.reserve(clientCount);
 
@@ -213,28 +269,17 @@ void runServer(HANDLE hFile, int clientCount) {
 			1024, 1024, 0, NULL
 		);
 
-		if (hPipe == INVALID_HANDLE_VALUE) {
-			std::cerr << "Pipe creation failed." << "\n";
-			continue;
-		}
+		if (hPipe == INVALID_HANDLE_VALUE) continue;
 
 		if (ConnectNamedPipe(hPipe, NULL) || GetLastError() == ERROR_PIPE_CONNECTED) {
-			log("Client connected.");
+			log("Client " + std::to_string(i + 1) + " connected.");
 
 			auto params = std::make_unique<ThreadParam>();
 			params->hPipe = hPipe;
-			params->hFile = hFile;
+			params->dbFileName = dbFileName;
 
-			HANDLE hThread = CreateThread(
-				NULL, 0,
-				clientThread,
-				params.release(),
-				0, NULL
-			);
-
-			if (hThread) {
-				hThreads.push_back(hThread);
-			}
+			HANDLE hThread = CreateThread(NULL, 0, clientThread, params.release(), 0, NULL);
+			if (hThread) hThreads.push_back(hThread);
 		}
 		else {
 			CloseHandle(hPipe);
@@ -244,8 +289,5 @@ void runServer(HANDLE hFile, int clientCount) {
 	if (!hThreads.empty()) {
 		WaitForMultipleObjects(static_cast<DWORD>(hThreads.size()), hThreads.data(), TRUE, INFINITE);
 	}
-
-	for (HANDLE h : hThreads) {
-		if (h != NULL) CloseHandle(h);
-	}
+	for (HANDLE h : hThreads) if (h) CloseHandle(h);
 }

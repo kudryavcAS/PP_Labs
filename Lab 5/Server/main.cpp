@@ -1,16 +1,22 @@
 #include "Server.hpp"
 
 int main() {
+#ifdef _WIN32
+	SetConsoleTitle("Server");
+#endif
+
 	initializeSync();
 
 	std::string filename;
 	int clientCount = 0;
 
-	HANDLE hFile = createDatabase(filename, clientCount);
-	launchClients(clientCount);
-	runServer(hFile, clientCount);
+	HANDLE hTempHandle = createDatabase(filename, clientCount);
+	CloseHandle(hTempHandle);
 
-	CloseHandle(hFile);
+	launchClients(clientCount);
+
+	runServer(filename, clientCount);
+
 	std::cout << "\nAll clients finished. Final result:";
 	printFileContent(filename);
 
