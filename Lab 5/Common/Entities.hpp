@@ -2,8 +2,8 @@
 #include <windows.h>
 #include <string>
 #include <iostream>
-#include <climits>  // Для INT_MAX
-#include <cfloat>   // Для DBL_MAX
+#include <climits>
+#include <cfloat>
 
 const std::string PIPE_NAME = "\\\\.\\pipe\\EmployeePipe";
 

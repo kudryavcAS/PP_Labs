@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <windows.h>
+#include <memory>
 #include "../Common/Entities.hpp"
 
 extern CRITICAL_SECTION g_csConsole;

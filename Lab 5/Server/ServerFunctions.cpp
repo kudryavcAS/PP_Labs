@@ -17,8 +17,6 @@ void log(const std::string& msg) {
 }
 
 void printFileContent(const std::string& filename) {
-	// Используем std::ifstream для простоты вывода всего файла подряд,
-	// так как это операция "администратора", когда клиенты еще не работают или закончили.
 	std::ifstream file(filename, std::ios::binary);
 	if (!file.is_open()) return;
 
@@ -42,10 +40,6 @@ long long findRecordOffset(HANDLE hFile, int id) {
 	Employee emp;
 	DWORD bytesRead;
 
-	// Читаем последовательно, чтобы найти смещение
-	// Для чистоты эксперимента в многопоточной среде лучше использовать pread (ReadFile с OVERLAPPED),
-	// чтобы не двигать глобальный курсор файла.
-
 	while (currentPos < fileSize.QuadPart) {
 		OVERLAPPED ov = { 0 };
 		ov.Offset = static_cast<DWORD>(currentPos);
@@ -63,19 +57,17 @@ long long findRecordOffset(HANDLE hFile, int id) {
 	return -1;
 }
 
-// Функция, которая будет работать в отдельном потоке (WinAPI style)
 DWORD WINAPI clientThread(LPVOID lpParam) {
-	// Распаковываем параметры и освобождаем память, выделенную в main
-	ThreadParam* params = static_cast<ThreadParam*>(lpParam);
+	std::unique_ptr<ThreadParam> params(static_cast<ThreadParam*>(lpParam));
+
 	HANDLE hPipe = params->hPipe;
 	HANDLE hFile = params->hFile;
-	delete params;
 
 	DWORD bytesRead, bytesWritten;
 	Request req;
 
 	while (ReadFile(hPipe, &req, sizeof(Request), &bytesRead, NULL)) {
-		if (bytesRead == 0) break; // Клиент отключился
+		if (bytesRead == 0) break;
 
 		Response resp;
 		long long offset = findRecordOffset(hFile, req.employeeNum);
@@ -87,11 +79,7 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 			continue;
 		}
 
-		// --- БЛОКИРОВКА ЗАПИСЕЙ ---
-		// Если клиент хочет ЧИТАТЬ -> ставим Shared Lock (0). Другие тоже могут читать.
-		// Если клиент хочет МЕНЯТЬ -> ставим Exclusive Lock. Никто не может ни читать, ни писать.
-
-		DWORD lockFlags = 0; // Shared lock по умолчанию
+		DWORD lockFlags = 0;
 		if (req.type == RequestType::MODIFY) {
 			lockFlags = LOCKFILE_EXCLUSIVE_LOCK;
 		}
@@ -102,7 +90,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 
 		log("Waiting lock for ID " + std::to_string(req.employeeNum));
 
-		// LockFileEx - это нативная WinAPI функция для Reader-Writer lock на уровне файла
 		if (!LockFileEx(hFile, lockFlags, 0, sizeof(Employee), 0, &ovLock)) {
 			resp.found = false;
 			strncpy_s(resp.message, "Server lock error.", 255);
@@ -110,7 +97,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 			continue;
 		}
 
-		// Читаем данные из заблокированной области
 		if (!ReadFile(hFile, &resp.record, sizeof(Employee), &bytesRead, &ovLock)) {
 			UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ovLock);
 			resp.found = false;
@@ -123,13 +109,11 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		strncpy_s(resp.message, "OK", 255);
 		WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 
-		// Ждем решения клиента (изменить или просто закончить)
 		EndAction action;
 		Employee modifiedEmp;
 
 		if (ReadFile(hPipe, &action, sizeof(EndAction), &bytesRead, NULL)) {
 			if (req.type == RequestType::MODIFY && action == EndAction::SAVE) {
-				// Если клиент сохраняет, читаем новую структуру
 				if (ReadFile(hPipe, &modifiedEmp, sizeof(Employee), &bytesRead, NULL)) {
 					WriteFile(hFile, &modifiedEmp, sizeof(Employee), &bytesWritten, &ovLock);
 					log("Updated ID " + std::to_string(modifiedEmp.num));
@@ -137,7 +121,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 			}
 		}
 
-		// Снимаем блокировку
 		UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ovLock);
 		log("Unlocked ID " + std::to_string(req.employeeNum));
 	}
@@ -150,11 +133,11 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 	return 0;
 }
 
-HANDLE createDatabase(std::string& filename, int& clientCount) {
+HANDLE createDatabase(std::string& outFilename, int& outClientCount) {
 	std::cout << "Enter filename for database: ";
-	std::cin >> filename;
+	std::cin >> outFilename;
 
-	HANDLE hFile = CreateFile(filename.c_str(),
+	HANDLE hFile = CreateFile(outFilename.c_str(),
 		GENERIC_READ | GENERIC_WRITE,
 		FILE_SHARE_READ | FILE_SHARE_WRITE,
 		NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -173,7 +156,7 @@ HANDLE createDatabase(std::string& filename, int& clientCount) {
 		std::cout << "Employee " << (i + 1) << "\nID: ";
 		inputNatural(emp.num);
 
-		std::cout << "Name (max 30 chars): ";
+		std::cout << "Name (max 9 chars): ";
 		std::string tempName;
 		std::getline(std::cin, tempName);
 
@@ -186,13 +169,14 @@ HANDLE createDatabase(std::string& filename, int& clientCount) {
 		WriteFile(hFile, &emp, sizeof(Employee), &written, NULL);
 	}
 
-	printFileContent(filename);
+	printFileContent(outFilename);
 
 	std::cout << "\nEnter number of clients to launch: ";
-	inputNatural(clientCount);
+	inputNatural(outClientCount);
 
 	return hFile;
 }
+
 void launchClients(int count) {
 	for (int i = 0; i < count; ++i) {
 		STARTUPINFO si;
@@ -217,8 +201,8 @@ void launchClients(int count) {
 }
 
 void runServer(HANDLE hFile, int clientCount) {
-	// Массив дескрипторов потоков
-	HANDLE* hThreads = new HANDLE[clientCount];
+	std::vector<HANDLE> hThreads;
+	hThreads.reserve(clientCount);
 
 	for (int i = 0; i < clientCount; ++i) {
 		HANDLE hPipe = CreateNamedPipe(
@@ -231,41 +215,37 @@ void runServer(HANDLE hFile, int clientCount) {
 
 		if (hPipe == INVALID_HANDLE_VALUE) {
 			std::cerr << "Pipe creation failed." << "\n";
-			hThreads[i] = NULL;
 			continue;
 		}
 
-		// Ждем подключения клиента
 		if (ConnectNamedPipe(hPipe, NULL) || GetLastError() == ERROR_PIPE_CONNECTED) {
 			log("Client connected.");
 
-			// Выделяем память под параметры потока (чтобы избежать гонки данных при передаче адреса)
-			ThreadParam* params = new ThreadParam;
+			auto params = std::make_unique<ThreadParam>();
 			params->hPipe = hPipe;
 			params->hFile = hFile;
 
-			// Создаем поток через WinAPI
-			hThreads[i] = CreateThread(
-				NULL,           // Default security
-				0,              // Default stack size
-				clientThread,   // Функция потока
-				params,         // Параметр
-				0,              // Default creation flags (run immediately)
-				NULL            // Thread ID (не нужен)
+			HANDLE hThread = CreateThread(
+				NULL, 0,
+				clientThread,
+				params.release(),
+				0, NULL
 			);
+
+			if (hThread) {
+				hThreads.push_back(hThread);
+			}
 		}
 		else {
 			CloseHandle(hPipe);
-			hThreads[i] = NULL;
 		}
 	}
 
-	// Ждем завершения всех потоков (аналог join)
-	WaitForMultipleObjects(clientCount, hThreads, TRUE, INFINITE);
-
-	// Закрываем дескрипторы потоков
-	for (int i = 0; i < clientCount; ++i) {
-		if (hThreads[i] != NULL) CloseHandle(hThreads[i]);
+	if (!hThreads.empty()) {
+		WaitForMultipleObjects(static_cast<DWORD>(hThreads.size()), hThreads.data(), TRUE, INFINITE);
 	}
-	delete[] hThreads;
+
+	for (HANDLE h : hThreads) {
+		if (h != NULL) CloseHandle(h);
+	}
 }
