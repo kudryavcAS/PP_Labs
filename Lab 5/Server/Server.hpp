@@ -6,19 +6,20 @@
 #include <windows.h>
 #include <memory>
 #include <iomanip>
-#include "../Common/Entities.hpp"
+#include <conio.h>
+#include "Entities.hpp"
 
 extern CRITICAL_SECTION g_csConsole;
 
 struct ThreadParam {
-	HANDLE hPipe;
-	std::string dbFileName; 
+	HANDLE hPipe = nullptr;
+	std::string dbFileName;
 };
 
 void initializeSync();
 void cleanupSync();
 void log(const std::string& msg);
-
+long long findRecordOffset(HANDLE hFile, int id);
 void printFileContent(const std::string& filename);
 HANDLE createDatabase(std::string& outFilename, int& outClientCount);
 void launchClients(int count);

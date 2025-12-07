@@ -12,18 +12,13 @@ void cleanupSync() {
 
 void log(const std::string& msg) {
 	EnterCriticalSection(&g_csConsole);
-	std::cout << "[SERVER Thread " << GetCurrentThreadId() << "]: " << msg << "\n";
+	std::cout << "[SERVER]: " << msg << "\n";
 	LeaveCriticalSection(&g_csConsole);
 }
 
 void printFileContent(const std::string& filename) {
-	HANDLE hFile = CreateFile(filename.c_str(), 
-		GENERIC_READ, 
-		FILE_SHARE_READ | FILE_SHARE_WRITE,
-		NULL, 
-		OPEN_EXISTING, 
-		FILE_ATTRIBUTE_NORMAL, 
-		NULL);
+	HANDLE hFile = CreateFile(filename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) return;
 
@@ -31,7 +26,7 @@ void printFileContent(const std::string& filename) {
 	DWORD bytesRead;
 
 	EnterCriticalSection(&g_csConsole);
-	std::cout << "\n--- File Content ---\n";
+	std::cout << "\nFile Content:\n";
 	std::cout << std::left << std::setw(10) << "ID" << std::setw(35) << "Name" << std::setw(10) << "Hours" << "\n";
 	std::cout << std::string(55, '-') << "\n";
 
@@ -57,14 +52,13 @@ long long findRecordOffset(HANDLE hFile, int id) {
 		ov.Offset = static_cast<DWORD>(currentPos);
 		ov.OffsetHigh = static_cast<DWORD>(currentPos >> 32);
 
-		// Попытка 1: Прочитать "по-хорошему"
 		bool readSuccess = ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov);
 
-		// Если не вышло
 		if (!readSuccess) {
 			DWORD err = GetLastError();
 
 			if (err != ERROR_LOCK_VIOLATION) break;
+
 			if (!LockFileEx(hFile, 0, 0, sizeof(Employee), 0, &ov)) break;
 
 			UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ov);
@@ -74,8 +68,9 @@ long long findRecordOffset(HANDLE hFile, int id) {
 			}
 		}
 		else if (bytesRead == 0) {
-			break; 
+			break;
 		}
+
 		if (emp.num == id) {
 			return currentPos;
 		}
@@ -114,7 +109,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		if (bytesRead == 0) break;
 
 		Response resp;
-
 		long long offset = findRecordOffset(hLocalFile, req.employeeNum);
 
 		if (offset == -1) {
@@ -133,17 +127,12 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		ovLock.Offset = static_cast<DWORD>(offset);
 		ovLock.OffsetHigh = static_cast<DWORD>(offset >> 32);
 
-		log("Waiting lock for ID " + std::to_string(req.employeeNum) +
-			(req.type == RequestType::MODIFY ? " (EXCLUSIVE)" : " (SHARED)"));
-
 		if (!LockFileEx(hLocalFile, lockFlags, 0, sizeof(Employee), 0, &ovLock)) {
 			resp.found = false;
 			strncpy_s(resp.message, "Server lock error.", MESSAGE_SIZE);
 			WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 			continue;
 		}
-
-		log("Acquired lock for ID " + std::to_string(req.employeeNum));
 
 		if (!ReadFile(hLocalFile, &resp.record, sizeof(Employee), &bytesRead, &ovLock)) {
 			UnlockFileEx(hLocalFile, 0, sizeof(Employee), 0, &ovLock);
@@ -164,13 +153,11 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 				if (ReadFile(hPipe, &modifiedEmp, sizeof(Employee), &bytesRead, NULL)) {
 					WriteFile(hLocalFile, &modifiedEmp, sizeof(Employee), &bytesWritten, &ovLock);
 					FlushFileBuffers(hLocalFile);
-					log("Updated ID " + std::to_string(modifiedEmp.num));
 				}
 			}
 		}
 
 		UnlockFileEx(hLocalFile, 0, sizeof(Employee), 0, &ovLock);
-		log("Released lock for ID " + std::to_string(req.employeeNum));
 	}
 
 	CloseHandle(hLocalFile);

@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <string>
 #include <conio.h>
-#include "../Common/Entities.hpp"
+#include "Entities.hpp"
 
 void printEmployee(const Employee& e);
 HANDLE connectToServer();

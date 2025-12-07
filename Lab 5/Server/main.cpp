@@ -1,4 +1,4 @@
-#include "Server.hpp"
+﻿#include "Server.hpp"
 
 int main() {
 #ifdef _WIN32
@@ -20,9 +20,8 @@ int main() {
 	std::cout << "\nAll clients finished. Final result:";
 	printFileContent(filename);
 
-	std::cout << "Press any key to exit...";
-	char c;
-	std::cin >> c;
+	std::cout << "Press any key to exit.";
+	(void)_getch();
 
 	cleanupSync();
 	return 0;
