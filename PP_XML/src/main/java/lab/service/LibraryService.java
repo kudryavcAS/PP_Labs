@@ -2,7 +2,6 @@ package lab.service;
 
 import lab.model.Book;
 import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -14,26 +13,32 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryService {
-    private static final String XML_PATH = "data/library.xml";
-    private static final String XSD_PATH = "data/library.xsd";
+    private final String xmlPath;
+    private final String xsdPath;
 
-    // Метод для валидации и загрузки
+    public LibraryService() {
+        this.xmlPath = "data/library.xml";
+        this.xsdPath = "data/library.xsd";
+    }
+
+    public LibraryService(String xmlPath, String xsdPath) {
+        this.xmlPath = xmlPath;
+        this.xsdPath = xsdPath;
+    }
+
     public List<Book> loadBooks() throws Exception {
-        File xmlFile = new File(XML_PATH);
-        File xsdFile = new File(XSD_PATH);
+        File xmlFile = new File(xmlPath);
+        File xsdFile = new File(xsdPath);
 
-        // 1. Валидация XSD
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(xsdFile);
         Validator validator = schema.newValidator();
-        validator.validate(new DOMSource(getDocument(xmlFile))); // Валидируем
+        validator.validate(new DOMSource(getDocument(xmlFile)));
 
-        // 2. Парсинг
         return parseBooks(xmlFile);
     }
 
@@ -77,7 +82,6 @@ public class LibraryService {
         return n.getNodeValue();
     }
 
-    // Сохранение изменений обратно в XML
     public void saveBooks(List<Book> books) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -102,12 +106,11 @@ public class LibraryService {
                 rootElement.appendChild(bookElem);
             }
 
-            // Запись в файл
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(XML_PATH));
+            StreamResult result = new StreamResult(new File(xmlPath));
             transformer.transform(source, result);
 
         } catch (Exception e) {

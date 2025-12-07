@@ -25,11 +25,10 @@ public class MainController {
     @FXML private TableColumn<Book, Integer> colAvailable;
 
     private final LibraryService service = new LibraryService();
-    private ObservableList<Book> masterData = FXCollections.observableArrayList();
+    private final ObservableList<Book> masterData = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        // Привязка колонок к свойствам модели
         colId.setCellValueFactory(cell -> cell.getValue().idProperty().asObject());
         colTitle.setCellValueFactory(cell -> cell.getValue().titleProperty());
         colAuthor.setCellValueFactory(cell -> cell.getValue().authorProperty());
@@ -39,7 +38,7 @@ public class MainController {
         colTotal.setCellValueFactory(cell -> cell.getValue().totalProperty().asObject());
         colAvailable.setCellValueFactory(cell -> cell.getValue().availableProperty().asObject());
 
-        onRefresh(); // Загрузить данные при старте
+        onRefresh();
     }
 
     @FXML
@@ -49,13 +48,11 @@ public class MainController {
             bookTable.setItems(masterData);
         } catch (Exception e) {
             showAlert("Ошибка", "Ошибка валидации или загрузки XML: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     @FXML
     void onAdd() {
-        // Создаем диалог для ввода данных новой книги
         Dialog<Book> dialog = new Dialog<>();
         dialog.setTitle("Добавить книгу");
         dialog.setHeaderText("Введите данные книги");
@@ -95,7 +92,7 @@ public class MainController {
                             Double.parseDouble(price.getText()),
                             category.getText(),
                             Integer.parseInt(total.getText()),
-                            Integer.parseInt(total.getText()) // Изначально доступно столько же, сколько всего
+                            Integer.parseInt(total.getText())
                     );
                 } catch (NumberFormatException e) {
                     showAlert("Ошибка", "Некорректный формат чисел");
@@ -149,7 +146,7 @@ public class MainController {
         if (selected.getAvailable() > 0) {
             selected.setAvailable(selected.getAvailable() - 1);
             service.saveBooks(masterData);
-            bookTable.refresh(); // Обновить UI
+            bookTable.refresh();
             showAlert("Успех", "Книга выдана читателю.");
         } else {
             showAlert("Ошибка", "Нет доступных экземпляров.");
@@ -160,10 +157,10 @@ public class MainController {
     void onSearch() {
         String filter = searchField.getText().toLowerCase();
 
-        FilteredList<Book> filteredData = new FilteredList<>(masterData, b -> true);
+        FilteredList<Book> filteredData = new FilteredList<>(masterData, _ -> true);
 
         filteredData.setPredicate(book -> {
-            if (filter == null || filter.isEmpty()) return true;
+            if (filter.isEmpty()) return true;
 
             return book.getAuthor().toLowerCase().contains(filter) ||
                     String.valueOf(book.getYear()).contains(filter) ||
