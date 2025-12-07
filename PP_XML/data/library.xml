@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="library.xsd">
+    <book id="1" total="10" available="8">
+        <title>Java Programming</title>
+        <author>James Gosling</author>
+        <year>2020</year>
+        <price>49.99</price>
+        <category>Programming</category>
+    </book>
+    <book id="2" total="5" available="2">
+        <title>Design Patterns</title>
+        <author>Erich Gamma</author>
+        <year>1994</year>
+        <price>39.99</price>
+        <category>Computer Science</category>
+    </book>
+    <book id="3" total="7" available="7">
+        <title>Effective Java</title>
+        <author>Joshua Bloch</author>
+        <year>2018</year>
+        <price>45.00</price>
+        <category>Programming</category>
+    </book>
+    <book id="4" total="5" available="0">
+        <title>Clean Code</title>
+        <author>Robert Martin</author>
+        <year>2008</year>
+        <price>35.50</price>
+        <category>Programming</category>
+    </book>
+    <book id="5" total="10" available="5">
+        <title>Война и мир</title>
+        <author>Лев Толстой</author>
+        <year>1869</year>
+        <price>25.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="6" total="8" available="6">
+        <title>Анна Каренина</title>
+        <author>Лев Толстой</author>
+        <year>1877</year>
+        <price>20.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="7" total="12" available="10">
+        <title>Преступление и наказание</title>
+        <author>Фёдор Достоевский</author>
+        <year>1866</year>
+        <price>18.50</price>
+        <category>Classic</category>
+    </book>
+    <book id="8" total="6" available="4">
+        <title>Идиот</title>
+        <author>Фёдор Достоевский</author>
+        <year>1869</year>
+        <price>19.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="9" total="5" available="1">
+        <title>Братья Карамазовы</title>
+        <author>Фёдор Достоевский</author>
+        <year>1880</year>
+        <price>22.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="10" total="15" available="15">
+        <title>Евгений Онегин</title>
+        <author>Александр Пушкин</author>
+        <year>1833</year>
+        <price>15.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="11" total="10" available="8">
+        <title>Капитанская дочка</title>
+        <author>Александр Пушкин</author>
+        <year>1836</year>
+        <price>14.50</price>
+        <category>Classic</category>
+    </book>
+    <book id="12" total="20" available="2">
+        <title>Мастер и Маргарита</title>
+        <author>Михаил Булгаков</author>
+        <year>1967</year>
+        <price>28.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="13" total="7" available="5">
+        <title>Собачье сердце</title>
+        <author>Михаил Булгаков</author>
+        <year>1925</year>
+        <price>16.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="14" total="8" available="8">
+        <title>Вишнёвый сад</title>
+        <author>Антон Чехов</author>
+        <year>1904</year>
+        <price>12.00</price>
+        <category>Classic</category>
+    </book>
+    <book id="15" total="9" available="3">
+        <title>Мёртвые души</title>
+        <author>Николай Гоголь</author>
+        <year>1842</year>
+        <price>17.50</price>
+        <category>Classic</category>
+    </book>
+</library>
