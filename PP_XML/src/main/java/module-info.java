@@ -1,8 +1,10 @@
-module lab.library.pp_xml {
+module lab {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.xml; // Для работы с XML (DOM парсер)
 
+    opens lab.controller to javafx.fxml;
+    opens lab.model to javafx.base;
 
-    opens lab.library.pp_xml to javafx.fxml;
-    exports lab.library.pp_xml;
+    exports lab;
 }
