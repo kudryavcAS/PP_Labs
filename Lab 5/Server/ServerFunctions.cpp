@@ -17,8 +17,13 @@ void log(const std::string& msg) {
 }
 
 void printFileContent(const std::string& filename) {
-	HANDLE hFile = CreateFile(filename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(filename.c_str(), 
+		GENERIC_READ, 
+		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL, 
+		OPEN_EXISTING, 
+		FILE_ATTRIBUTE_NORMAL, 
+		NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) return;
 
@@ -39,7 +44,6 @@ void printFileContent(const std::string& filename) {
 	CloseHandle(hFile);
 }
 
-// --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОИСКА ---
 long long findRecordOffset(HANDLE hFile, int id) {
 	LARGE_INTEGER fileSize;
 	if (!GetFileSizeEx(hFile, &fileSize)) return -1;
@@ -53,46 +57,32 @@ long long findRecordOffset(HANDLE hFile, int id) {
 		ov.Offset = static_cast<DWORD>(currentPos);
 		ov.OffsetHigh = static_cast<DWORD>(currentPos >> 32);
 
-		// 1. Пытаемся прочитать запись
-		if (!ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) || bytesRead == 0) {
+		// Попытка 1: Прочитать "по-хорошему"
+		bool readSuccess = ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov);
 
-			// 2. Если чтение не удалось, проверяем причину
+		// Если не вышло
+		if (!readSuccess) {
 			DWORD err = GetLastError();
 
-			if (err == ERROR_LOCK_VIOLATION) {
-				// АГА! Кто-то (Писатель) держит эту запись под замком.
-				// Мы не можем прочитать ID, поэтому не знаем, тот ли это сотрудник.
-				// НАДО ПОДОЖДАТЬ, пока писатель закончит.
+			if (err != ERROR_LOCK_VIOLATION) break;
+			if (!LockFileEx(hFile, 0, 0, sizeof(Employee), 0, &ov)) break;
 
-				// Пытаемся поставить свою блокировку (Shared) на этот же участок.
-				// LockFileEx УСНЕТ, пока Писатель не снимет свой Exclusive Lock.
-				if (LockFileEx(hFile, 0, 0, sizeof(Employee), 0, &ov)) {
+			UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ov);
 
-					// Мы проснулись! Значит писатель закончил.
-					// Сразу снимаем свою блокировку, чтобы прочитать данные.
-					UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ov);
-
-					// Читаем заново (теперь должно получиться)
-					if (ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) && bytesRead > 0) {
-						if (emp.num == id) return currentPos;
-					}
-				}
-				// Если даже после ожидания не прочиталось -> идем к следующей записи
-			}
-			else {
-				// Если ошибка другая (конец файла или диск сломался) -> выходим
+			if (!ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) || bytesRead == 0) {
 				break;
 			}
 		}
-		else {
-			// Чтение прошло успешно с первого раза
-			if (emp.num == id) {
-				return currentPos;
-			}
+		else if (bytesRead == 0) {
+			break; 
+		}
+		if (emp.num == id) {
+			return currentPos;
 		}
 
 		currentPos += sizeof(Employee);
 	}
+
 	return -1;
 }
 
@@ -100,7 +90,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 	std::unique_ptr<ThreadParam> params(static_cast<ThreadParam*>(lpParam));
 	HANDLE hPipe = params->hPipe;
 
-	// Открываем свой дескриптор файла
 	HANDLE hLocalFile = CreateFile(
 		params->dbFileName.c_str(),
 		GENERIC_READ | GENERIC_WRITE,
@@ -126,8 +115,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 
 		Response resp;
 
-		// Теперь эта функция УСНЕТ, если наткнется на изменяемую запись,
-		// а не вернет -1.
 		long long offset = findRecordOffset(hLocalFile, req.employeeNum);
 
 		if (offset == -1) {

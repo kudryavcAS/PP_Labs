@@ -11,7 +11,7 @@
 extern CRITICAL_SECTION g_csConsole;
 
 struct ThreadParam {
-	HANDLE hPipe = nullptr;
+	HANDLE hPipe;
 	std::string dbFileName; 
 };
 
