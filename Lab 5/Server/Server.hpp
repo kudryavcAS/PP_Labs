@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <memory>
 #include <iomanip>
+#include <conio.h>
 #include "../Common/Entities.hpp"
 
 extern CRITICAL_SECTION g_csConsole;

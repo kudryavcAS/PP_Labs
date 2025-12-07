@@ -12,7 +12,7 @@ void cleanupSync() {
 
 void log(const std::string& msg) {
 	EnterCriticalSection(&g_csConsole);
-	std::cout << "[SERVER Thread " << GetCurrentThreadId() << "]: " << msg << "\n";
+	std::cout << "[SERVER]: " << msg << "\n";
 	LeaveCriticalSection(&g_csConsole);
 }
 
@@ -26,7 +26,7 @@ void printFileContent(const std::string& filename) {
 	DWORD bytesRead;
 
 	EnterCriticalSection(&g_csConsole);
-	std::cout << "\n--- File Content ---\n";
+	std::cout << "\nFile Content:\n";
 	std::cout << std::left << std::setw(10) << "ID" << std::setw(35) << "Name" << std::setw(10) << "Hours" << "\n";
 	std::cout << std::string(55, '-') << "\n";
 
@@ -39,7 +39,6 @@ void printFileContent(const std::string& filename) {
 	CloseHandle(hFile);
 }
 
-// --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОИСКА ---
 long long findRecordOffset(HANDLE hFile, int id) {
 	LARGE_INTEGER fileSize;
 	if (!GetFileSizeEx(hFile, &fileSize)) return -1;
@@ -53,46 +52,32 @@ long long findRecordOffset(HANDLE hFile, int id) {
 		ov.Offset = static_cast<DWORD>(currentPos);
 		ov.OffsetHigh = static_cast<DWORD>(currentPos >> 32);
 
-		// 1. Пытаемся прочитать запись
-		if (!ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) || bytesRead == 0) {
+		bool readSuccess = ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov);
 
-			// 2. Если чтение не удалось, проверяем причину
+		if (!readSuccess) {
 			DWORD err = GetLastError();
 
-			if (err == ERROR_LOCK_VIOLATION) {
-				// АГА! Кто-то (Писатель) держит эту запись под замком.
-				// Мы не можем прочитать ID, поэтому не знаем, тот ли это сотрудник.
-				// НАДО ПОДОЖДАТЬ, пока писатель закончит.
+			if (err != ERROR_LOCK_VIOLATION) break;
 
-				// Пытаемся поставить свою блокировку (Shared) на этот же участок.
-				// LockFileEx УСНЕТ, пока Писатель не снимет свой Exclusive Lock.
-				if (LockFileEx(hFile, 0, 0, sizeof(Employee), 0, &ov)) {
+			if (!LockFileEx(hFile, 0, 0, sizeof(Employee), 0, &ov)) break;
 
-					// Мы проснулись! Значит писатель закончил.
-					// Сразу снимаем свою блокировку, чтобы прочитать данные.
-					UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ov);
+			UnlockFileEx(hFile, 0, sizeof(Employee), 0, &ov);
 
-					// Читаем заново (теперь должно получиться)
-					if (ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) && bytesRead > 0) {
-						if (emp.num == id) return currentPos;
-					}
-				}
-				// Если даже после ожидания не прочиталось -> идем к следующей записи
-			}
-			else {
-				// Если ошибка другая (конец файла или диск сломался) -> выходим
+			if (!ReadFile(hFile, &emp, sizeof(Employee), &bytesRead, &ov) || bytesRead == 0) {
 				break;
 			}
 		}
-		else {
-			// Чтение прошло успешно с первого раза
-			if (emp.num == id) {
-				return currentPos;
-			}
+		else if (bytesRead == 0) {
+			break;
+		}
+
+		if (emp.num == id) {
+			return currentPos;
 		}
 
 		currentPos += sizeof(Employee);
 	}
+
 	return -1;
 }
 
@@ -100,7 +85,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 	std::unique_ptr<ThreadParam> params(static_cast<ThreadParam*>(lpParam));
 	HANDLE hPipe = params->hPipe;
 
-	// Открываем свой дескриптор файла
 	HANDLE hLocalFile = CreateFile(
 		params->dbFileName.c_str(),
 		GENERIC_READ | GENERIC_WRITE,
@@ -125,9 +109,6 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		if (bytesRead == 0) break;
 
 		Response resp;
-
-		// Теперь эта функция УСНЕТ, если наткнется на изменяемую запись,
-		// а не вернет -1.
 		long long offset = findRecordOffset(hLocalFile, req.employeeNum);
 
 		if (offset == -1) {
@@ -146,17 +127,12 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 		ovLock.Offset = static_cast<DWORD>(offset);
 		ovLock.OffsetHigh = static_cast<DWORD>(offset >> 32);
 
-		log("Waiting lock for ID " + std::to_string(req.employeeNum) +
-			(req.type == RequestType::MODIFY ? " (EXCLUSIVE)" : " (SHARED)"));
-
 		if (!LockFileEx(hLocalFile, lockFlags, 0, sizeof(Employee), 0, &ovLock)) {
 			resp.found = false;
 			strncpy_s(resp.message, "Server lock error.", MESSAGE_SIZE);
 			WriteFile(hPipe, &resp, sizeof(Response), &bytesWritten, NULL);
 			continue;
 		}
-
-		log("Acquired lock for ID " + std::to_string(req.employeeNum));
 
 		if (!ReadFile(hLocalFile, &resp.record, sizeof(Employee), &bytesRead, &ovLock)) {
 			UnlockFileEx(hLocalFile, 0, sizeof(Employee), 0, &ovLock);
@@ -177,13 +153,11 @@ DWORD WINAPI clientThread(LPVOID lpParam) {
 				if (ReadFile(hPipe, &modifiedEmp, sizeof(Employee), &bytesRead, NULL)) {
 					WriteFile(hLocalFile, &modifiedEmp, sizeof(Employee), &bytesWritten, &ovLock);
 					FlushFileBuffers(hLocalFile);
-					log("Updated ID " + std::to_string(modifiedEmp.num));
 				}
 			}
 		}
 
 		UnlockFileEx(hLocalFile, 0, sizeof(Employee), 0, &ovLock);
-		log("Released lock for ID " + std::to_string(req.employeeNum));
 	}
 
 	CloseHandle(hLocalFile);
