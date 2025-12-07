@@ -1,4 +1,4 @@
-#include "Client.hpp"
+﻿#include "Client.hpp"
 
 int main(int argc, char* argv[]) {
 	std::string title = "Client";
