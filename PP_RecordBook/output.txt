@@ -1,0 +1,26 @@
+EXCELLENT STUDENTS
+(all grades >= 9)
+==================
+
+Bernyak Nikita, course: 2, group: PM-6
+Session 1:
+  Mathematics - 9
+  Physics - 10
+  Programming - 9
+  History - passed
+  Physical Education - passed
+Session 2:
+  Mathematics - 10
+  Programming - 9
+
+
+Petrova Maria, course: 1, group: PI-11
+Session 1:
+  Mathematics - 10
+  Physics - 9
+  Programming - 10
+  History - passed
+  Physical Education - passed
+
+
+Total excellent students: 2

@@ -1,0 +1,81 @@
+[
+  {
+    "lastName": "Bernyak",
+    "firstName": "Nikita",
+    "course": 2,
+    "group": "PM-6",
+    "sessions": [
+      {
+        "sessionNumber": 1,
+        "subjects": [
+          {"name": "Mathematics", "grade": 9, "isExam": true},
+          {"name": "Physics", "grade": 10, "isExam": true},
+          {"name": "Programming", "grade": 9, "isExam": true},
+          {"name": "History", "grade": 1, "isExam": false},
+          {"name": "Physical Education", "grade": 1, "isExam": false}
+        ]
+      },
+      {
+        "sessionNumber": 2,
+        "subjects": [
+          {"name": "Mathematics", "grade": 10, "isExam": true},
+          {"name": "Programming", "grade": 9, "isExam": true}
+        ]
+      }
+    ]
+  },
+  {
+    "lastName": "Sidorov",
+    "firstName": "Alexey",
+    "course": 2,
+    "group": "KB-8",
+    "sessions": [
+      {
+        "sessionNumber": 1,
+        "subjects": [
+          {"name": "Mathematics", "grade": 8, "isExam": true},
+          {"name": "Physics", "grade": 9, "isExam": true},
+          {"name": "Programming", "grade": 7, "isExam": true},
+          {"name": "History", "grade": 1, "isExam": false},
+          {"name": "Physical Education", "grade": 1, "isExam": false}
+        ]
+      }
+    ]
+  },
+  {
+    "lastName": "Petrova",
+    "firstName": "Maria",
+    "course": 1,
+    "group": "PI-11",
+    "sessions": [
+      {
+        "sessionNumber": 1,
+        "subjects": [
+          {"name": "Mathematics", "grade": 10, "isExam": true},
+          {"name": "Physics", "grade": 9, "isExam": true},
+          {"name": "Programming", "grade": 10, "isExam": true},
+          {"name": "History", "grade": 1, "isExam": false},
+          {"name": "Physical Education", "grade": 1, "isExam": false}
+        ]
+      }
+    ]
+  },
+  {
+    "lastName": "Kozlov",
+    "firstName": "Dmitry",
+    "course": 3,
+    "group": "PM-6",
+    "sessions": [
+      {
+        "sessionNumber": 1,
+        "subjects": [
+          {"name": "Mathematics", "grade": 10, "isExam": true},
+          {"name": "Physics", "grade": 10, "isExam": true},
+          {"name": "Programming", "grade": 9, "isExam": true},
+          {"name": "History", "grade": 0, "isExam": false},
+          {"name": "Physical Education", "grade": 1, "isExam": false}
+        ]
+      }
+    ]
+  }
+]

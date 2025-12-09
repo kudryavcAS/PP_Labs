@@ -1,34 +1,29 @@
-.vs/
-x64/
-x86/
-Debug/
-Release/
-ARM/
-ARM64/
+### IntelliJ IDEA ###
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+allure/
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
-*.vcxproj.user
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
-*.obj
-*.pdb
-*.ilk
-*.idb
-*.gch
-*.pch
-*.ipch
-*.tlog
-*.lastbuildstate
-*.log
+### VS Code ###
+.vscode/
 
-*.exe
-*.dll
-*.lib
-*.exp
-
-*.bin
-
-Thumbs.db
-Desktop.ini
+### Mac OS ###
+.DS_Store

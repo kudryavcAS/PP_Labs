@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/0c730f82-c254-4139-917b-f7cd5111bc50-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/1946625d-7694-494f-a57f-e9b799bfd84e-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/1b4b711d-6ee7-48f2-979c-4c6b1927ed01-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/2269159d-d439-4d74-891f-5fa5e87fa899-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/2f8381a0-ae7b-46c0-9273-dbd778e93cb2-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/3734db10-4174-458e-b40b-47f2a910890b-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/38b7f03f-5401-44c4-a3cd-21e677175c2c-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/3c5cf7a8-37cb-4da7-a096-803197b7a314-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/47598ade-e2c2-4003-94d4-e9f3a33a9684-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/49329260-cd7c-45da-a0a8-a5c66a73aa1f-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/49a7d5d2-dcf1-4984-b8ce-0bbe0e4b5b75-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/4d0ecd85-551a-4cc9-a911-a46ced6868e1-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/503cf813-8425-4a34-861d-ed172dd7813b-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/533236d5-7174-4667-b49c-a03dad6f567c-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/54dce2ac-acc9-4b11-b384-0e180d2ec8d6-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/62605414-ac94-4b3a-abf9-e38a2c4aaa6b-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/6a797c8a-9955-4dc6-8bb6-7c9e435d60c1-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/766b8d9b-139b-4840-9100-6abed8367a75-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/8e392d7e-2b66-4cbc-a409-8f7b011fcefd-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/ae755b84-8d36-442e-b15b-ea57d5d5d8d9-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/bea47fb1-8412-44cf-a454-c200c9b20ce5-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/d3701328-7bf5-41e1-88f7-669be088d9e6-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/da3ef1f8-cd8e-4cde-b0a7-5cc94e1456b7-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/e1312d09-2ade-4ade-b755-5ccb6f26d1fe-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/e4078bca-f04c-4671-854e-0525a970d3cc-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/e60c1e5a-ecac-4f9c-ba1d-66a5d2846ebf-result.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/f298f464-c677-4d68-8b9e-b2031a2749e4-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/f3900874-13c9-46f4-bae1-ed6c67a6b99d-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/f6e45ac3-7b77-45d0-a331-f4e5c76de732-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/allure-results/ffe17f05-4945-43da-8c60-5d6853de4f4a-container.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PP_KR1/src/test/java/org/example/HotelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../PP_KR1/src/test/java/org/example/HotelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="34e6m9YgTkZuV7jZnozXZm07bhu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.StudentOperationDemo.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.All in PP_lab_4.1.executor&quot;: &quot;Run&quot;,
+    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.PP_lab_4.1 [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.PP_lab_4.1 [io.qameta.allure:allure-maven:2.12.0:report].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.PP_lab_4.1 [io.qameta.allure:allure-maven:2.12.0:serve].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Y/PP_Labs/PP_lab_4.1&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Y\PP_Labs\PP_lab_4.1\target" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="All in PP_lab_4.1" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PP_lab_4.1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.All in PP_lab_4.1" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0539ef83-0ff8-41cf-9639-9520d62b1b1b" name="Changes" comment="" />
+      <created>1761561848062</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1761561848062</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/students/StudentIntersection.java</url>
+          <line>9</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
