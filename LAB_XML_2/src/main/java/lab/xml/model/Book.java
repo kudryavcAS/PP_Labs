@@ -10,13 +10,9 @@ public class Book {
     private int total;
     private int available;
 
-    // 1. Пустой конструктор ОБЯЗАТЕЛЕН
-    // Spring использует его, когда получает данные из формы на сайте
     public Book() {
     }
 
-    // 2. Конструктор со всеми полями
-    // Используем его в Repository, когда читаем XML
     public Book(int id, String title, String author, int year, double price, String category, int total, int available) {
         this.id = id;
         this.title = title;
@@ -27,9 +23,6 @@ public class Book {
         this.total = total;
         this.available = available;
     }
-
-    // 3. Геттеры и Сеттеры
-    // Без них Thymeleaf не сможет вывести данные на страницу
 
     public int getId() {
         return id;

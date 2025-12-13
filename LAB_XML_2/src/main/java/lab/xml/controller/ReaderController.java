@@ -1,7 +1,10 @@
 package lab.xml.controller;
 
 import lab.xml.model.Book;
+import lab.xml.model.IssuedBook;
+import lab.xml.model.User;
 import lab.xml.repository.BookXmlRepository;
+import lab.xml.repository.IssuedBookRepository;
 import lab.xml.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,10 +23,12 @@ public class ReaderController {
 
     private final BookXmlRepository bookRepository;
     private final UserRepository userRepository;
+    private final IssuedBookRepository issuedBookRepository;
 
-    public ReaderController(BookXmlRepository bookRepository, UserRepository userRepository) {
+    public ReaderController(BookXmlRepository bookRepository, UserRepository userRepository, IssuedBookRepository issuedBookRepository) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
+        this.issuedBookRepository = issuedBookRepository;
     }
 
     @GetMapping("/books")
@@ -47,7 +52,18 @@ public class ReaderController {
 
     @GetMapping("/account")
     public String account(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        model.addAttribute("user", userRepository.findByUsername(userDetails.getUsername()));
+        User user = userRepository.findByUsername(userDetails.getUsername());
+
+        List<Integer> myBookIds = issuedBookRepository.findByUser(user).stream()
+                .map(IssuedBook::getBookId)
+                .toList();
+
+        List<Book> myBooks = bookRepository.findAll().stream()
+                .filter(b -> myBookIds.contains(b.getId()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("user", user);
+        model.addAttribute("myBooks", myBooks);
         return "reader/account";
     }
 }

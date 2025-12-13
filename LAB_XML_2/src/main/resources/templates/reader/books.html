@@ -1,18 +1,19 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout}" lang="ru">
 <head><title>Каталог</title></head>
 <body>
 <div layout:fragment="content">
     <h2 class="mb-3">Каталог книг</h2>
 
-    <!-- Форма поиска -->
     <form th:action="@{/reader/books}" method="get" class="row g-3 mb-4 p-3 bg-light rounded border">
         <div class="col-md-6">
-            <input type="text" name="search" class="form-control" placeholder="Что ищем? (Название, автор...)" th:value="${param.search}">
+            <input aria-label="Поиск книг" type="text" name="search" class="form-control"
+                   placeholder="Что ищем? (Название, автор...)" th:value="${param.search}">
         </div>
         <div class="col-md-4">
-            <select name="type" class="form-select">
+            <select aria-label="Критерий поиска" name="type" class="form-select">
                 <option value="author">По автору</option>
                 <option value="year">По году</option>
                 <option value="category">По категории</option>
@@ -24,7 +25,6 @@
         <div class="col-12"><a href="/reader/books" class="text-secondary small">Сбросить фильтры</a></div>
     </form>
 
-    <!-- Таблица (Только чтение) -->
     <table class="table table-hover">
         <thead>
         <tr>

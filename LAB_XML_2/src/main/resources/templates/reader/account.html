@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}" lang="ru">
+<head><title>Личный кабинет</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            Личный кабинет
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Профиль</h5>
+            <p><strong>Логин:</strong> <span th:text="${user.username}"></span></p>
+            <p><strong>Роль:</strong> <span th:text="${user.role}"></span></p>
+
+            <hr>
+
+            <h4>📚 Ваши книги на руках:</h4>
+
+            <div th:if="${#lists.isEmpty(myBooks)}" class="alert alert-info">
+                У вас пока нет взятых книг.
+            </div>
+
+            <table th:if="${!#lists.isEmpty(myBooks)}" class="table table-striped mt-3">
+                <thead class="table-light">
+                <tr>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Год</th>
+                    <th>Категория</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book : ${myBooks}">
+                    <td th:text="${book.title}"></td>
+                    <td th:text="${book.author}"></td>
+                    <td th:text="${book.year}"></td>
+                    <td th:text="${book.category}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
