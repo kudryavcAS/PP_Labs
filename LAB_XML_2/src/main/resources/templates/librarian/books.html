@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>Управление книгами</title></head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>📚 Фонд библиотеки</h2>
+        <a href="/librarian/book/add" class="btn btn-success">+ Добавить книгу</a>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Автор</th>
+            <th>Год</th>
+            <th>Категория</th>
+            <th>Цена</th>
+            <th>Всего / Доступно</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}">1</td>
+            <td th:text="${book.title}">Война и мир</td>
+            <td th:text="${book.author}">Толстой</td>
+            <td th:text="${book.year}">1869</td>
+            <td th:text="${book.category}">Классика</td>
+
+            <!-- Форма изменения цены -->
+            <td>
+                <form th:action="@{/librarian/book/update_price}" method="post" class="d-flex">
+                    <input type="hidden" name="id" th:value="${book.id}"/>
+                    <input type="number" step="0.01" name="price" th:value="${book.price}"
+                           class="form-control form-control-sm" style="width: 80px;"/>
+                    <button type="submit" class="btn btn-sm btn-outline-primary ms-1">💾</button>
+                </form>
+            </td>
+
+            <td>
+                <span th:text="${book.total}">10</span> /
+                <span th:text="${book.available}" class="fw-bold text-success">5</span>
+            </td>
+
+            <!-- Кнопка выдачи -->
+            <td>
+                <form th:action="@{/librarian/book/checkout}" method="post" th:if="${book.available > 0}">
+                    <input type="hidden" name="id" th:value="${book.id}"/>
+                    <button type="submit" class="btn btn-sm btn-warning">Выдать</button>
+                </form>
+                <span th:if="${book.available == 0}" class="text-muted">Нет в наличии</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title>Каталог</title></head>
+<body>
+<div layout:fragment="content">
+    <h2 class="mb-3">Каталог книг</h2>
+
+    <!-- Форма поиска -->
+    <form th:action="@{/reader/books}" method="get" class="row g-3 mb-4 p-3 bg-light rounded border">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Что ищем? (Название, автор...)" th:value="${param.search}">
+        </div>
+        <div class="col-md-4">
+            <select name="type" class="form-select">
+                <option value="author">По автору</option>
+                <option value="year">По году</option>
+                <option value="category">По категории</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Найти</button>
+        </div>
+        <div class="col-12"><a href="/reader/books" class="text-secondary small">Сбросить фильтры</a></div>
+    </form>
+
+    <!-- Таблица (Только чтение) -->
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Автор</th>
+            <th>Год</th>
+            <th>Категория</th>
+            <th>Цена</th>
+            <th>Наличие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.title}" class="fw-bold">Название</td>
+            <td th:text="${book.author}">Автор</td>
+            <td th:text="${book.year}">2020</td>
+            <td th:text="${book.category}">Жанр</td>
+            <td th:text="${book.price}">100</td>
+            <td>
+                <span th:if="${book.available > 0}" class="badge bg-success">Есть</span>
+                <span th:if="${book.available == 0}" class="badge bg-secondary">Нет</span>
+                (<span th:text="${book.available}"></span> из <span th:text="${book.total}"></span>)
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
